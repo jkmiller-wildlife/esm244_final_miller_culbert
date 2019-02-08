@@ -18,13 +18,18 @@ ui <- fluidPage(
    navbarPage("VAFB Birds!",
               # First Tab Panel = Introduction/Summary
               tabPanel("Summary",
-                       h1("A header!"),
-                       h2("A secondary header..."),
-                       p("Then some paragraph text. ."),
-                       p("Followed by another paragraph of text..."),
-                       h1("Then another header"),
-                       p("You get the idea...)")
-              ), 
+                       h1("App Summary"),
+                       p("This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird, gull, and raptor abundance, and changes in beach habitat characteristics at VAFB."),
+                       h1("Data"),
+                       p("Since March 2012, weekly transect surveys were conducted at VAFB beaches. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
+                       p("Thousands of data points from bird count transects have been collected by field biologists since 2012. The data are not in tidy format. Data have not been recorded for each bird observed-- bird counts are aggregated and reported at the end of each transect and/or field survey. We will be able to convert the data to tidy format if necessary."),
+                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys:  
+                        *Date of survey
+                        *Location of survey site
+                        *Bird type: Category (shorebird, gull, or raptor), Species
+                        *Species/Category abundance: # of observed snowy plovers (based on age & sex), shorebirds, gulls, or raptors 
+                        *Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)")),
+              
               
               # Second Tab Panel = Time and Species Count Data    
               tabPanel("Time and Species Count Data",
