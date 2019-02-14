@@ -23,10 +23,12 @@ library(janitor)
 transect <- read_csv("transect.csv") %>% 
   clean_names()
 
+# From this dataset we want Date, Transect block, total male, total female, unknown, juvs, and wrack
 
 avian <- read_csv("avian.csv")%>% 
   clean_names()
 
+# From this dataset we want date, Transect block, species, and count
 
 ```
 
