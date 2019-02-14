@@ -1,0 +1,32 @@
+---
+title: "ESM 244 - Final"
+author: "Jamie K. Miller"
+date: "February 14, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include = FALSE}
+# load packages
+
+library(tidyverse)
+library(janitor)
+
+```
+
+```{r, include = FALSE}
+# Load data
+
+transect <- read_csv("transect.csv") %>% 
+  clean_names()
+
+
+avian <- read_csv("avian.csv")%>% 
+  clean_names()
+
+
+```
+

@@ -1,0 +1,69 @@
+ID,Species,SpeciesName,SpeciesType
+2,AMAV,American Avocet,Shorebird
+3,AMKE,American Kestrel,Raptor
+4,BBPL,Black-bellied Plover,Shorebird
+5,BLTU,Black Turnstone,Shorebird
+6,BNST,Black-necked Stilt,Shorebird
+7,BRAC,Brandt's Cormorant,Seabird
+8,BRAN,Brant,Seabird
+9,BRPE,Brown Pelican,Seabird
+10,CAGU,California Gull,Gull
+11,CATE,Caspian Tern,Tern
+12,COHA,Cooper's Hawk,Raptor
+13,COME,Common Merganser,Seabird
+14,CORA,Common Raven,Corvid
+15,DCCO,Double-crested Cormorant,Seabird
+16,DOWI,Undifferentiated Dowitcher,Shorebird
+17,DUNL,Dunlin,Shorebird
+18,ELTE,Elegant Tern,Tern
+19,GBHE,Great Blue Heron,Wader
+20,GHOW,Great Horned Owl,Raptor
+21,GLGU,Glaucous Gull,Gull
+22,GREG,Great Egret,Wader
+23,GWGU,Glaucous-winged Gull,Gull
+24,HEEG,Heerman's Gull,Gull
+25,HERG,Herring Gull,Gull
+26,KILL,Killdeer,Shorebird
+27,LBCU,Long-billed Curlew,Shorebird
+28,LETE,Least Tern,Tern
+29,MAGO,Marbled Godwit,Shorebird
+30,MERL,Merlin,Raptor
+31,NOHA,Northern Harrier,Raptor
+32,PAJA,Parasitic Jaeger,Seabird
+33,PEFA,Peregrine Falcon,Raptor
+34,RBGU,Ring-billed Gull,Gull
+35,ROTE,Royal Tern,Tern
+36,RTHA,Red-tailed Hawk,Raptor
+37,SAND,Sanderling,Shorebird
+38,SEPL,Semipalmated Plover,Shorebird
+39,SNEG,Snowy Egret,Wader
+40,SURF,Surfbird,Shorebird
+41,UNGU,Unidenfied Gull,Gull
+42,UNK,Unidentifed peeps,Shorebird
+43,WEGU,Western Gull,Gull
+44,WESA,Western Sandpiper,Shorebird
+45,WHIM,Whimbrel,Shorebird
+46,WILL,Willet,Shorebird
+47,YELL,Undifferentiated Yellowlegs,Shorebird
+48,AMPI,American Pipit,Songbird
+49,BOGU,Bonaparte's Gull,Gull
+50,MEGU,Mew Gull,Gull
+51,OSPR,Osprey,Raptor
+52,RUTU,Ruddy Turnstone,Shorebird
+53,SPSA,Spotted Sandpiper,Shorebird
+54,SUSC,Surf Scoter,Seabird
+55,TUVU,Turkey Vulture,Raptor
+56,WEGR,Western Grebe,Seabird
+57,WFIB,White-faced Ibis,Wader
+58,LESA,Least Sandpiper,Shorebird
+59,UNOW,Unidentified Owl,Raptor
+60,UNRA,Unidentified Raptor,Raptor
+61,UNFA,Unidentified Falcon,Raptor
+62,UNGU,Unidentified Gull,Gull
+63,UNPE,Unidentified Peep,Shorebird
+64,UNSA,Unidentified Sandpiper,Shorebird
+65,UNTE,Unidentified Tern,Tern
+66,BASA,Baird's Sandpiper,Shorebird
+67,WISN,Wilson's Snipe,Shorebird
+69,REKN,Red Knot,Shorebird
+70,FOTE,Forster's Tern,Tern
