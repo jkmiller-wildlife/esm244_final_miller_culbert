@@ -1,6 +1,6 @@
 ---
 title: "ESM 244 - Final"
-author: "Jamie K. Miller"
+author: "Kristan Culbert"
 date: "February 14, 2019"
 output: html_document
 ---
