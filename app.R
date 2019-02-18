@@ -28,7 +28,7 @@ ui <- fluidPage(
                         *Location of survey site
                         *Bird type: Category (shorebird, gull, or raptor), Species
                         *Species/Category abundance: # of observed snowy plovers (based on age & sex), shorebirds, gulls, or raptors 
-                        *Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)")),
+                        *Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)")), #figure out how to insert bullet points
               
               
               # Second Tab Panel = Time and Species Count Data    

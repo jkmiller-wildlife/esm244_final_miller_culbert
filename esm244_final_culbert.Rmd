@@ -17,7 +17,7 @@ library(janitor)
 
 ```
 
-```{r, include = FALSE}
+```{r}
 # Load data
 
 transect <- read_csv("transect.csv") %>% 
@@ -27,12 +27,44 @@ transect <- read_csv("transect.csv") %>%
 avian <- read_csv("avian.csv")%>% 
   clean_names()
 
+#load key for species
+
+species_key <- read_csv("lookup_species.csv") %>% 
+  clean_names()
+
+
 
 ```
 
 ```{r}
+#Data wrangling for transect data - are we using this for wrack data only?
 
+transect_select <- transect %>% 
+  select(id, survey_date, transect_block, wrack, seagrass, wrack_assessed) %>% 
+  rownames_to_column()
 
+View(transect_select)
+
+```
+
+```{r}
+#Data wrangling for avian data - double-check variables that we want to keep
+
+avian_select <- avian %>%
+  na.omit() %>% 
+  select(survey_date, species, count,transect_block) %>% 
+  rownames_to_column() %>% 
+  arrange(species) 
+
+View(avian_select)
+
+#Quick histogram
+
+avian_hist <- ggplot(avian_select, aes(x = count)) +
+  geom_histogram(aes(fill = species)) +
+  facet_wrap(~species, scales = "free")
+
+avian_hist
 
 
 ```
