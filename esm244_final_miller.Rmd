@@ -34,6 +34,30 @@ avian <- read_csv("avian.csv")%>%
 
 ```{r}
 
+snpl <- transect %>%
+  select(survey_date, transect_block, total_male, total_female, unknown_individual, juvenile) %>% 
+  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% 
+  filter(snpl > 0)
+
+snpl_clean <- snpl %>%
+  select(survey_date, transect_block, snpl) %>% 
+  rename(count = snpl)
+
+wrack <- transect %>%
+  select(survey_date, transect_block, wrack)
+
+avian_clean <- avian %>% 
+  select(survey_date, transect_block, species, species_name, species_type, count)
+
+```
+
+```{r}
+# Merge test # 1
+# Merge snpl_clean with avian_clean into new df
+# then all SNPL entries will show NA in species, species_name, and species_type
+
+vafb_birds <- bind_rows(avian_clean, snpl_clean)  # yay it worked!
+  
 
 
 
