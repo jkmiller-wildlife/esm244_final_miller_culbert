@@ -32,8 +32,6 @@ avian <- read_csv("avian.csv")%>%
 species_key <- read_csv("lookup_species.csv") %>% 
   clean_names()
 
-
-
 ```
 
 ```{r}
@@ -51,7 +49,6 @@ View(transect_select)
 #Data wrangling for avian data - double-check variables that we want to keep
 
 avian_select <- avian %>%
-  na.omit() %>% 
   select(survey_date, species, count,transect_block) %>% 
   rownames_to_column() %>% 
   arrange(species) 
