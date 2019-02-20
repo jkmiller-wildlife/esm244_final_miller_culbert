@@ -56,10 +56,22 @@ avian_clean <- avian %>%
 # Merge snpl_clean with avian_clean into new df
 # then all SNPL entries will show NA in species, species_name, and species_type
 
-vafb_birds <- bind_rows(avian_clean, snpl_clean)  # yay it worked!
-  
+vafb_birds_combine <- bind_rows(avian_clean, snpl_clean)  # yay it worked!
 
+# The following three code snippets convert 'NA' values in the species, species_name, and species_type columns to 'SNPL', 'Snowy Plover', and 'Shorebird', repectively. Each column needed to be a character for it to work, according to Google.
 
+vafb_birds_combine$species <- as.character(vafb_birds_combine$species)
+vafb_birds_combine$species <- ifelse(is.na(vafb_birds_combine$species),'SNPL',vafb_birds_combine$species)
+
+vafb_birds_combine$species_name <- as.character(vafb_birds_combine$species_name)
+vafb_birds_combine$species_name <- ifelse(is.na(vafb_birds_combine$species_name),'Snowy Plover',vafb_birds_combine$species_name)
+
+vafb_birds_combine$species_type <- as.character(vafb_birds_combine$species_type)
+vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type),'Shorebird',vafb_birds_combine$species_type)
+
+# ok, so now we can use this data to make some graphs
+# will probably need to summarize at some point
 
 ```
+
 
