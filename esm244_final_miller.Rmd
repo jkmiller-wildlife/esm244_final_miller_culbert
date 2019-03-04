@@ -17,17 +17,17 @@ library(janitor)
 library(lubridate)
 
 ```
-
+###This code chunk is old - do not use.
 ```{r, include = FALSE}
 # Load data
 
-transect <- read_csv("transect.csv") %>% 
-  clean_names()
+#transect <- read_csv("transect.csv") %>% 
+#  clean_names()
 
 # From this dataset we want Date, Transect block, total male, total female, unknown, juvs, and wrack
 
-avian <- read_csv("avian.csv")%>% 
-  clean_names()
+#avian <- read_csv("avian.csv")%>% 
+#  clean_names()
 
 # From this dataset we want date, Transect block, species, and count
 
@@ -84,4 +84,28 @@ ggplot(vafb_birds_combine) +
 
 
 ```
+### Use this to read in data.
+```{r, include = FALSE}
+# Load all updated data. Let's try this again.
 
+transect <- read_csv("transect_updated.csv") %>% 
+  clean_names()
+# From this dataset we want Date, Transect block, total male, total female, unknown, and juvs. I added a totals column in excel to double check numbers.
+
+avian <- read_csv("avian_updated.csv")%>% 
+  clean_names()
+# From this dataset we want date, Transect block, species, and count
+
+wrack <- read_csv("wrack_updated.csv")%>% 
+  clean_names()
+# wrack values, date, and transect block
+
+lookup_avian <- read_csv("lookup_avian.csv")%>% 
+  clean_names()
+# Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
+
+lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
+  clean_names()
+# transect block names, beach section initial code, region designation, and gps coords
+
+```
