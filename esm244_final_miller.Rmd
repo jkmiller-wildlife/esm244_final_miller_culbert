@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(janitor)
+library(lubridate)
 
 ```
 
@@ -74,4 +75,13 @@ vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type)
 
 ```
 
+```{r}
+
+ggplot(vafb_birds_combine) +
+  geom_point(aes(x = survey_date, y = count, color = species))
+
+# this looks awful
+
+
+```
 
