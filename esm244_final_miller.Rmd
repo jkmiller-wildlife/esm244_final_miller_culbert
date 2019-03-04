@@ -13,10 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 # load packages
 
 library(tidyverse)
-library(janitor)
-library(lubridate)
+library(janitor) # to clean column names
+library(lubridate) # date wrnagling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer
 
 ```
+
 ###This code chunk is old - do not use.
 ```{r, include = FALSE}
 # Load data
@@ -33,25 +34,98 @@ library(lubridate)
 
 ```
 
-```{r}
+###This code chunk is old - do not use.
+```{r, include = FALSE}
+# Copied this code chunk below. Will modify for updated datasets. This code chunk only worked woth the original data.
+# Will reuse dataframe names.
 
-snpl <- transect %>%
-  select(survey_date, transect_block, total_male, total_female, unknown_individual, juvenile) %>% 
-  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% 
-  filter(snpl > 0)
+#snpl <- transect %>%
+#  select(survey_date, transect_block, total_male, total_female, unknown_individual, juvenile) %>% 
+#  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% 
+#  filter(snpl > 0)
 
-snpl_clean <- snpl %>%
-  select(survey_date, transect_block, snpl) %>% 
-  rename(count = snpl)
+#snpl_clean <- snpl %>%
+#  select(survey_date, transect_block, snpl) %>% 
+#  rename(count = snpl)
 
-wrack <- transect %>%
-  select(survey_date, transect_block, wrack)
+#wrack <- transect %>%
+#  select(survey_date, transect_block, wrack)
 
-avian_clean <- avian %>% 
-  select(survey_date, transect_block, species, species_name, species_type, count)
+#avian_clean <- avian %>% 
+#  select(survey_date, transect_block, species, species_name, species_type, count)
 
 ```
 
+
+###Use this to read in data.
+```{r, include = FALSE}
+# Load all updated data. Let's try this again.
+
+transect <- read_csv("transect_updated.csv") %>% 
+  clean_names()
+# From this dataset we want Date, Transect block, total male, total female, unknown, and juvs. I added a totals column in excel to double check numbers. Associated math is in next code chunk.
+
+avian <- read_csv("avian_updated.csv")%>% 
+  clean_names() %>% 
+  select(survey_date, transect_block, species, count)
+# From this dataset we want date, Transect block, species, and count
+
+wrack <- read_csv("wrack_updated.csv")%>% 
+  clean_names()
+# wrack values, date, and transect block
+
+lookup_avian <- read_csv("lookup_avian.csv")%>% 
+  clean_names() %>% 
+  rename(species = actual_species)
+# Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
+
+lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
+  clean_names()
+# transect block names, beach section initial code, region designation, and gps coords
+
+```
+
+###Wrangle SNPL population counts from transect data.
+```{r}
+# Tally SNPL count from transect data so it can be added to the avian data
+# SNPL data is collected be age/sex demographic Need to create totals and filter out all transect blocks that do not have any plovers in them.
+
+snpl <- transect %>%
+  select(survey_date, transect_block, beach_section_initials, beach, males_individual, females_individual, unknown_individual, pairs, juvenile, total) %>% 
+  mutate(total_male = males_individual + pairs) %>% # combine M individ. w/ pairs to get total number of males
+  mutate(total_female = females_individual + pairs) %>% # combine F individ. w/ pairs to get total number of females
+  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% # this should match column 'total'. Looks like it does
+  filter(snpl > 0) # filters out blocks where non SNPL were seen
+
+snpl_clean <- snpl %>%
+  select(survey_date, transect_block, beach_section_initials, beach, snpl) %>% 
+  rename(count = snpl)
+
+```
+
+###Wrangle avian data
+```{r}
+# Need to join avian data with lookup_avian for species name and type info, and lookup_blocks for beach section.
+
+# Join avian species info to avian count data
+avian_sp_join <- full_join(avian, lookup_avian, by = "species") # yes, this worked.
+
+# Clean up transect blocks before joining. 
+blocks <- lookup_blocks %>% 
+  select(transect_block, beach_section_initials, beach)
+
+# Join blocks to avian
+avian_block_join <- full_join(avian_sp_join, blocks, by = "transect_block")
+
+# Clean up columns and filter for only North, Purisima, and South beaches 
+avian_clean <- avian_block_join %>% 
+  select(survey_date, transect_block, beach_section_initials, beach, species, species_name, species_type, count) %>% 
+  filter(beach == "NORTH" | beach == "PURISIMA" | beach == "SOUTH") %>% 
+  filter(species != "NA")
+
+```
+
+###Combine avian and snpl data for a complete VAFB birds dataset
 ```{r}
 # Merge test # 1
 # Merge snpl_clean with avian_clean into new df
@@ -84,28 +158,21 @@ ggplot(vafb_birds_combine) +
 
 
 ```
-### Use this to read in data.
-```{r, include = FALSE}
-# Load all updated data. Let's try this again.
 
-transect <- read_csv("transect_updated.csv") %>% 
-  clean_names()
-# From this dataset we want Date, Transect block, total male, total female, unknown, and juvs. I added a totals column in excel to double check numbers.
 
-avian <- read_csv("avian_updated.csv")%>% 
-  clean_names()
-# From this dataset we want date, Transect block, species, and count
 
-wrack <- read_csv("wrack_updated.csv")%>% 
-  clean_names()
-# wrack values, date, and transect block
 
-lookup_avian <- read_csv("lookup_avian.csv")%>% 
-  clean_names()
-# Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
 
-lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
-  clean_names()
-# transect block names, beach section initial code, region designation, and gps coords
+
+
+```{r}
+#wrack <- transect %>%
+#  select(survey_date, transect_block, wrack)
 
 ```
+
+
+
+
+
+
