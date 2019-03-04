@@ -14,7 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(janitor) # to clean column names
-library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer
+library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer. converts dates to dates rather than numerical sequences.
+library(tseries) # for time series data
 
 ```
 
@@ -58,7 +59,7 @@ library(lubridate) # date wrangling. will probably need to separate out counts b
 
 
 ###Use this to read in data.
-```{r, include = FALSE}
+```{r}
 # Load all updated data. Let's try this again.
 
 transect <- read_csv("transect_updated.csv") %>% 
@@ -148,6 +149,13 @@ vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type)
 
 # ok, so now we can use this data to make some graphs
 # will probably need to summarize at some point
+
+```
+
+
+###Use lubridate() functions to convert to times/dates
+```{r date_time}
+vafb_birds_combine$survey_date <- mdy(vafb_birds_combine$survey_date)
 
 ```
 
@@ -241,20 +249,34 @@ vafb_birds_combine %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 # ok, for the graphs we need a count for each beach sector. Think about how fine scale we want to split this up.
-# also, dates are sorted by month/date/year numerically. Not chronologically.
+# also, dates are sorted by month/date/year numerically. Not chronologically. Hopefully lubridate can help with this.
+# Sorted out dates with lubridate. - fixed it in prior code chunk
+# Also, maybe can try re-filtering so we include blocks with 0 counts of birds.
+
+```
+
+###For the time series plots, group by beach section. 
+
+```{r}
+# Sum counts for each beach section. can then plot max birds per beach section over time. Keep transect block separations for map.
+
+
+
+
+
 
 ```
 
 
 
 
-
-
-
 ###Wrangle the wrack data to make it useful
 ```{r}
-#wrack <- transect %>%
-#  select(survey_date, transect_block, wrack)
+wrack <- wrack %>%
+  select(survey_date, transect_block, wrack) #%>% 
+#  filter(transect_block != "NA")
+
+wrack$survey_date <- mdy(wrack$survey_date)
 
 ```
 
