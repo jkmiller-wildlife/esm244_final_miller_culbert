@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(janitor) # to clean column names
-library(lubridate) # date wrnagling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer
+library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer
 
 ```
 
@@ -99,7 +99,8 @@ snpl <- transect %>%
 
 snpl_clean <- snpl %>%
   select(survey_date, transect_block, beach_section_initials, beach, snpl) %>% 
-  rename(count = snpl)
+  rename(count = snpl) %>% 
+  filter(beach == "NORTH" | beach == "PURISIMA" | beach == "SOUTH") 
 
 ```
 
@@ -174,6 +175,18 @@ ggplot(vafb_birds_combine) +
 
 
 ```{r}
+ggplot(vafb_birds_combine) +
+  geom_point(aes(x = survey_date, y = count)) +
+  facet_wrap(~species_type, scale = "free") +
+  theme(legend.position = "none")
+
+# better. Using species type as a dropdown for the app will be useful.
+# why are there 1000 terns? that doesn't seem right. Checked the data and it appears entered accurately.
+
+```
+
+
+```{r}
 # Look at just shorebirds for a moment
 vafb_birds_combine %>% 
   filter(species_type == "Shorebird") %>% 
@@ -198,19 +211,43 @@ vafb_birds_combine %>%
 # Maybe by combining with wrack data it will sort out.
 ```
 
-
-
-
 ```{r}
-ggplot(vafb_birds_combine) +
+# Look at just SNPL separated by beach sector. Maybe this will help sort out dates.
+vafb_birds_combine %>% 
+  filter(species == "SNPL") %>% 
+  ggplot() +
   geom_point(aes(x = survey_date, y = count)) +
-  facet_wrap(~species_type, scale = "free") +
-  theme(legend.position = "none")
+  facet_wrap(~beach, scale = "free") 
 
-# better. Using species type as a dropdown for the app will be useful.
-# why are there 1000 terns? that doesn't seem right. Checked the data and it appears entered accurately.
+# Why is Jalama still here? I removed it earlier, yes? - ok fixed it in snpl_clean dataframe.
+```
+
+
+```{r, fig.width=30}
+# Look at just SNPL on North Beaches. Maybe this will help sort out dates.
+vafb_birds_combine %>% 
+  filter(species == "SNPL") %>% 
+  filter(beach == "NORTH") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = count)) 
+
+
+# Look at just SNPL on Purisima Beaches. Maybe this will help sort out dates.
+vafb_birds_combine %>% 
+  filter(species == "SNPL") %>% 
+  filter(beach == "PURISIMA") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = count, color = beach_section_initials)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+# ok, for the graphs we need a count for each beach sector. Think about how fine scale we want to split this up.
+# also, dates are sorted by month/date/year numerically. Not chronologically.
 
 ```
+
+
+
+
 
 
 
