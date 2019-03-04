@@ -131,7 +131,8 @@ avian_clean <- avian_block_join %>%
 # Merge snpl_clean with avian_clean into new df
 # then all SNPL entries will show NA in species, species_name, and species_type
 
-vafb_birds_combine <- bind_rows(avian_clean, snpl_clean)  # yay it worked!
+vafb_birds_combine <- bind_rows(avian_clean, snpl_clean) %>% # yay it worked!
+  filter(count > 0) 
 
 # The following three code snippets convert 'NA' values in the species, species_name, and species_type columns to 'SNPL', 'Snowy Plover', and 'Shorebird', repectively. Each column needed to be a character for it to work, according to Google.
 
@@ -149,6 +150,7 @@ vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type)
 
 ```
 
+###Visualization attempts
 ```{r}
 
 ggplot(vafb_birds_combine) +
@@ -156,15 +158,63 @@ ggplot(vafb_birds_combine) +
 
 # this looks awful
 
+```
 
+```{r}
+
+ggplot(vafb_birds_combine) +
+  geom_point(aes(x = survey_date, y = count, color = species)) +
+  facet_wrap(~species_type, scale = "free") +
+  theme(legend.position = "none")
+
+# better. Using species type as a dropdown for the app will be useful.
+
+
+```
+
+
+```{r}
+# Look at just shorebirds for a moment
+vafb_birds_combine %>% 
+  filter(species_type == "Shorebird") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = count)) +
+  facet_wrap(~species, scale = "free") 
+
+# better. Using species type as a dropdown for the app will be useful.
+
+
+```
+
+```{r}
+# Look at just SNPL and SAND for a moment
+vafb_birds_combine %>% 
+  filter(species == "SNPL" | species == "SAND") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = count)) +
+  facet_wrap(~species, scale = "free") 
+
+# I feel like something wierd is going on with the dates. Wrangle that next. I don't think it is sorted chronologically.
+# Maybe by combining with wrack data it will sort out.
 ```
 
 
 
 
+```{r}
+ggplot(vafb_birds_combine) +
+  geom_point(aes(x = survey_date, y = count)) +
+  facet_wrap(~species_type, scale = "free") +
+  theme(legend.position = "none")
+
+# better. Using species type as a dropdown for the app will be useful.
+# why are there 1000 terns? that doesn't seem right. Checked the data and it appears entered accurately.
+
+```
 
 
 
+###Wrangle the wrack data to make it useful
 ```{r}
 #wrack <- transect %>%
 #  select(survey_date, transect_block, wrack)
