@@ -255,19 +255,37 @@ vafb_birds_combine %>%
 
 ```
 
-###For the time series plots, group by beach section. 
+###For the time series plots, group by beach section. Use these dataframes for making graphs!!!
 
 ```{r}
 # Sum counts for each beach section. can then plot max birds per beach section over time. Keep transect block separations for map.
 
 
+birds_by_sector <- vafb_birds_combine %>% 
+  group_by(survey_date, beach_section_initials, species, species_type) %>% 
+  summarize(total = sum(count))
 
 
 
+birds_by_region <- vafb_birds_combine %>% 
+  group_by(survey_date, beach, species, species_type) %>% 
+  summarize(total = sum(count))
 
 ```
 
 
+```{r, fig.width=30}
+
+birds_by_region %>% 
+  filter(species == "SNPL") %>% 
+  filter(beach == "PURISIMA") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = total)) +
+  geom_line(aes(x = survey_date, y = total)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+
+```
 
 
 ###Wrangle the wrack data to make it useful
@@ -282,6 +300,25 @@ wrack$survey_date <- mdy(wrack$survey_date)
 
 
 
+###What we need to do:
+- Background/Introductory Tab
+
+##### Data Tab 1 Time and Species Count Data
+Widget 1: Input: Time by year (2012 - 2018)
+Type: Slider, which will allow app users to examine progression of data on a temporal scale. 
+
+Widget 2
+Input: Location of observation site
+Type: Radio button, which will allow app users to switch between observation sites. 
+
+Widget 3
+Input: Bird species
+Type: Checkboxes or multiple select box, which will allow app users to compare multiple species on a single output. 
+
+App users will be able to use the time slider to scroll through temporal data and species count data, which will generate a line graph. 
+
+
+##### Data Tab 2 Abundance and Study Map
 
 
 
