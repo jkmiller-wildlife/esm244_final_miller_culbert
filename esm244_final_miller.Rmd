@@ -9,6 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, include = FALSE}
+# Install new packages
+#install.packages("rgdal")
+```
+
+
 ```{r packages, include = FALSE}
 # load packages
 
@@ -16,6 +22,9 @@ library(tidyverse)
 library(janitor) # to clean column names
 library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer. converts dates to dates rather than numerical sequences.
 library(tseries) # for time series data
+library(sf)
+library(tmap)
+library(rgdal) # For transforming UTM corrdinates to lat/long
 
 ```
 
@@ -160,7 +169,7 @@ vafb_birds_combine$survey_date <- mdy(vafb_birds_combine$survey_date)
 ```
 
 ###Visualization attempts
-```{r}
+```{r include = FALSE}
 
 ggplot(vafb_birds_combine) +
   geom_point(aes(x = survey_date, y = count, color = species))
@@ -169,7 +178,7 @@ ggplot(vafb_birds_combine) +
 
 ```
 
-```{r}
+```{r, include = FALSE}
 
 ggplot(vafb_birds_combine) +
   geom_point(aes(x = survey_date, y = count, color = species)) +
@@ -182,7 +191,7 @@ ggplot(vafb_birds_combine) +
 ```
 
 
-```{r}
+```{r, include = FALSE}
 ggplot(vafb_birds_combine) +
   geom_point(aes(x = survey_date, y = count)) +
   facet_wrap(~species_type, scale = "free") +
@@ -194,7 +203,7 @@ ggplot(vafb_birds_combine) +
 ```
 
 
-```{r}
+```{r, include = FALSE}
 # Look at just shorebirds for a moment
 vafb_birds_combine %>% 
   filter(species_type == "Shorebird") %>% 
@@ -207,7 +216,7 @@ vafb_birds_combine %>%
 
 ```
 
-```{r}
+```{r, include = FALSE}
 # Look at just SNPL and SAND for a moment
 vafb_birds_combine %>% 
   filter(species == "SNPL" | species == "SAND") %>% 
@@ -219,7 +228,7 @@ vafb_birds_combine %>%
 # Maybe by combining with wrack data it will sort out.
 ```
 
-```{r}
+```{r, include = FALSE}
 # Look at just SNPL separated by beach sector. Maybe this will help sort out dates.
 vafb_birds_combine %>% 
   filter(species == "SNPL") %>% 
@@ -231,7 +240,7 @@ vafb_birds_combine %>%
 ```
 
 
-```{r, fig.width=30}
+```{r, fig.width=30, include = FALSE}
 # Look at just SNPL on North Beaches. Maybe this will help sort out dates.
 vafb_birds_combine %>% 
   filter(species == "SNPL") %>% 
@@ -265,8 +274,6 @@ birds_by_sector <- vafb_birds_combine %>%
   group_by(survey_date, beach_section_initials, species, species_type) %>% 
   summarize(total = sum(count))
 
-
-
 birds_by_region <- vafb_birds_combine %>% 
   group_by(survey_date, beach, species, species_type) %>% 
   summarize(total = sum(count))
@@ -297,7 +304,63 @@ wrack_simple <- wrack %>%
 #wrack_simple$survey_date <- mdy(wrack_simple$survey_date) # This line of code just messes things up.
 
 # Attach transect block info to wrack data so we can select it in dropdowns
-wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block")
+wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block") %>% 
+  select(survey_date, transect_block, wrack, beach_section_initials, beach)
+
+
+```
+
+###Tab 1 Graph
+```{r}
+
+
+
+
+```
+
+###Tab 2 Map
+```{r}
+# Read in couties shapefile for a map background
+ca_counties <- read_sf(".", layer = "california_county_shape_file")
+
+#Reproject to WGS84
+wgs84 <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +no_defs"
+
+# Filter to Santa Barbara County. We will be soomed in enough that we don't need other background shapefiles.
+sb_county <- ca_counties %>% 
+  filter(NAME == "Santa Barbara")%>% 
+#  st_transform(crs = wgs84) # Double check crs for WGS84 UTM ZOne 10S datum that transect block points are in. Or just transform them all. I'm pretty sure they are all transformed.
+
+# Simplfy lookup_blocks so only transect block, and UTM are shown. Might need to convert UTM to lat/long
+block_gps <- lookup_blocks %>% 
+  select(x_proj, y_proj) %>% 
+  filter(x_proj != "NA")
+
+#rownames(block_gps) <- lookup_blocks$transect_block
+
+
+#Transform UTM to lat/long
+block_utm <- SpatialPoints(block_gps, proj4string=CRS("+proj=utm +zone=10S +datum=WGS84"))
+
+block_latlong <- spTransform(block_utm, CRS("+proj=longlat +datum=WGS84"))
+
+# Coerce back to dataframe so ggplot knows what to do with it.
+block_gps2 <- as.data.frame(block_latlong) 
+
+ggplot(sb_county) +
+  geom_sf() +
+
+ggplot(block_gps2)
+    geom_sf(color = "black")
+
+plot(block_gps2)
+    
+```
+
+###Tab 3 Graphs with wrack data
+```{r}
+
+
 
 ```
 
@@ -308,7 +371,11 @@ wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block")
 - Create app shell
 - Tab 1 line graphs
 - Tab 2 map with population represented as dots
-- Tab 3 line graphs with wrack data
+- Tab 3 line graphs with wrack data. keep it simple and use just SNPL, SAND, and species type::Gulls.
+- Figure out how to attach our graphs to the app. How do the controls interact with the graphs?
+
+
+
 
 ##### Data Tab 1 Time and Species Count Data
 Widget 1: Input: Time by year (2012 - 2018)
