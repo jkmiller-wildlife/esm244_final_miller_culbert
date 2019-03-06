@@ -59,7 +59,7 @@ library(tseries) # for time series data
 
 
 ###Use this to read in data.
-```{r}
+```{r, include = FALSE}
 # Load all updated data. Let's try this again.
 
 transect <- read_csv("transect_updated.csv") %>% 
@@ -71,7 +71,7 @@ avian <- read_csv("avian_updated.csv")%>%
   select(survey_date, transect_block, species, count)
 # From this dataset we want date, Transect block, species, and count
 
-wrack <- read_csv("wrack_updated.csv")%>% 
+wrack_df <- read_csv("wrack_updated.csv")%>% 
   clean_names()
 # wrack values, date, and transect block
 
@@ -290,11 +290,14 @@ birds_by_region %>%
 
 ###Wrangle the wrack data to make it useful
 ```{r}
-wrack <- wrack %>%
-  select(survey_date, transect_block, wrack) #%>% 
-#  filter(transect_block != "NA")
+wrack_simple <- wrack %>% 
+  select(survey_date, transect_block, wrack) %>%
+  filter(wrack != -9)
 
-wrack$survey_date <- mdy(wrack$survey_date)
+#wrack_simple$survey_date <- mdy(wrack_simple$survey_date) # This line of code just messes things up.
+
+# Attach transect block info to wrack data so we can select it in dropdowns
+wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block")
 
 ```
 
@@ -302,6 +305,10 @@ wrack$survey_date <- mdy(wrack$survey_date)
 
 ###What we need to do:
 - Background/Introductory Tab
+- Create app shell
+- Tab 1 line graphs
+- Tab 2 map with population represented as dots
+- Tab 3 line graphs with wrack data
 
 ##### Data Tab 1 Time and Species Count Data
 Widget 1: Input: Time by year (2012 - 2018)
@@ -320,5 +327,87 @@ App users will be able to use the time slider to scroll through temporal data an
 
 ##### Data Tab 2 Abundance and Study Map
 
+Widget 1
+Input: Time by year (2012 - 2018)
+Type: Slider, which will allow app users to examine progression of data on a temporal scale. 
 
+
+Widget 2
+Input: Location of observation site
+Type: Radio button, which will allow app users to switch between observation sites. 
+
+
+Widget 3
+Input: Bird species
+Type: Checkboxes or multiple select box, which will allow app users to compare multiple species on a single output. 
+
+App users will be able to view changes in species density over time by selecting one or more species, and projecting species density onto a map of the project area. 
+
+
+
+##### Data Tab 3 Wrack Data and SNPL/SAND/gull graphs
+
+Widget 1
+Input: Time by year (2012 - 2018)
+Type: Slider, which will allow app users to examine progression of data on a temporal scale. 
+
+
+Widget 2
+Input: Location of observation site
+Type: Radio button, which will allow app users to switch between observation sites. 
+
+
+Widget 3
+Input: Shorebird species
+Type: Checkboxes or multiple select box, which will allow app users to compare multiple species on a single output. 
+
+App users will be able to use the time slider to scroll through wrack index data and shorebird count data, which will generate a line graph. 
+
+
+##### Below is just a copy/paste of our summary that we turned in. Not formatted. Just information.
+App Summary
+This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird, gull, and raptor abundance, and changes in beach habitat characteristics at VAFB.
+
+Data
+Since March 2012, weekly transect surveys were conducted at VAFB beaches. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017).
+
+Thousands of data points from bird count transects have been collected by field biologists since 2012. The data are not in tidy format. Data have not been recorded for each bird observed-- bird counts are aggregated and reported at the end of each transect and/or field survey. We will be able to convert the data to tidy format if necessary. 
+
+We will use the following variables in our app, which include data from weekly and semi-weekly field surveys:  
+Date of survey
+Location of survey site
+Bird type: Category (shorebird, gull, or raptor), Species
+Species/Category abundance: # of observed snowy plovers (based on age & sex), shorebirds, gulls, or raptors 
+Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)
+
+
+Widgets
+We will include the following widgets in our app: 
+Widget 1
+Input: Time by year (2012 - 2018)
+Type: Slider, which will allow app users to examine progression of data on a temporal scale. 
+Widget 2
+Input: Location of observation site
+Type: Radio button, which will allow app users to change location scale and switch between beach sectors. 
+Widget 3
+Input: Bird species
+Type: Checkboxes or multiple select box, which will allow app users to compare multiple species or an entire category on a single output. 
+
+Outputs
+We will include the following three final outputs that will be produced based on users’ widget selections: 
+
+Output 1
+ App users will be able to use the time slider to scroll through temporal data and species count data, which will generate a line graph. 
+
+Output 2
+App users will be able to view changes in species density over time by selecting one or more species, and projecting species density onto a map of the project area.
+Output 3
+App users will be able to use the time slider to scroll through wrack index data and shorebird count data, which will generate a line graph. 
+
+Literature Cited
+Robinette, D.P, J.K. Miller, and J. Howar. 2017. Monitoring and Management of the Endangered California Least Tern and the Threatened Western Snowy Plover at Vandenberg Air Force Base, 2017. Unpublished Report, Point Blue Conservation Science, Petaluma, CA.
+
+
+##### Challenges
+- Data wrangling a problematic data set
 
