@@ -25,6 +25,16 @@ library(tseries) # for time series data
 library(sf)
 library(tmap)
 library(rgdal) # For transforming UTM corrdinates to lat/long
+library(leaflet)
+library(ggrepel)
+library(ggspatial)
+library(RColorBrewer)
+library(gganimate)
+library(spatstat)
+library(maptools)
+library(sp)
+library(raster)
+
 
 ```
 
@@ -90,7 +100,8 @@ lookup_avian <- read_csv("lookup_avian.csv")%>%
 # Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
 
 lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
-  clean_names()
+  clean_names() %>% 
+  filter(beach == "NORTH" | beach == "SOUTH" | beach == "PURISIMA")
 # transect block names, beach section initial code, region designation, and gps coords
 
 ```
@@ -299,45 +310,65 @@ birds_by_region %>%
 ```{r}
 wrack_simple <- wrack %>% 
   select(survey_date, transect_block, wrack) %>%
-  filter(wrack != -9)
+  filter(wrack != -9) 
 
 #wrack_simple$survey_date <- mdy(wrack_simple$survey_date) # This line of code just messes things up.
 
 # Attach transect block info to wrack data so we can select it in dropdowns
 wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block") %>% 
-  select(survey_date, transect_block, wrack, beach_section_initials, beach)
+  select(survey_date, transect_block, wrack, beach_section_initials, beach) %>% 
+  filter(beach == "NORTH" | beach == "SOUTH" | beach == "PURISIMA")
 
+# Not certain this is necessary, but it yields the mean wrack values for each beach sector per survey day
+wrack_mean_sector <- wrack_beach %>% 
+  group_by(survey_date, beach_section_initials) %>% 
+  summarize(mean = mean(wrack))
 
 ```
 
 ###Tab 1 Graph
-```{r}
+```{r, fig.width=30}
 
+birds_by_region %>% 
+#  filter(species == "SNPL") %>% 
+#  filter(beach == "PURISIMA") %>% 
+  ggplot() +
+  geom_point(aes(x = survey_date, y = total)) +
+  geom_line(aes(x = survey_date, y = total)) +
+  labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
+# Figure out how to make this selectable in widgets. 
 
+# Widget 1: Dropdown/radio button selects species or species type. 
+# Widget 2: Slider scale selects date. 
+# Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South).
+
+# Result: Graph of species or species type population time series. Grouped by Beach Sector at smallest.
+  
+# Incorporate gganimate!
 
 ```
 
 ###Tab 2 Map
 ```{r}
-# Read in couties shapefile for a map background
-ca_counties <- read_sf(".", layer = "california_county_shape_file")
+# Map prep code
 
-#Reproject to WGS84
-wgs84 <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +no_defs"
+# Read in couties shapefile for a map background
+ca_counties <- read_sf(".", layer = "california_county_shape_file") #%>% 
+#  st_transform(crs = 4326) # I guess it already is. R didn't like this snippet of code.
 
 # Filter to Santa Barbara County. We will be soomed in enough that we don't need other background shapefiles.
 sb_county <- ca_counties %>% 
-  filter(NAME == "Santa Barbara")%>% 
-#  st_transform(crs = wgs84) # Double check crs for WGS84 UTM ZOne 10S datum that transect block points are in. Or just transform them all. I'm pretty sure they are all transformed.
+  filter(NAME == "Santa Barbara") #%>% 
+ # Double check crs for WGS84 UTM ZOne 10S datum that transect block points are in. Or just transform them all. I'm pretty sure they are all transformed.
 
-# Simplfy lookup_blocks so only transect block, and UTM are shown. Might need to convert UTM to lat/long
+# Simplfy lookup_blocks so only transect block, and UTM are shown. Need to convert UTM to lat/long
 block_gps <- lookup_blocks %>% 
-  select(x_proj, y_proj) %>% 
+  dplyr::select(x_proj, y_proj) %>% 
   filter(x_proj != "NA")
 
-#rownames(block_gps) <- lookup_blocks$transect_block
-
+#rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
 
 #Transform UTM to lat/long
 block_utm <- SpatialPoints(block_gps, proj4string=CRS("+proj=utm +zone=10S +datum=WGS84"))
@@ -347,27 +378,68 @@ block_latlong <- spTransform(block_utm, CRS("+proj=longlat +datum=WGS84"))
 # Coerce back to dataframe so ggplot knows what to do with it.
 block_gps2 <- as.data.frame(block_latlong) 
 
-ggplot(sb_county) +
-  geom_sf() +
-
-ggplot(block_gps2)
-    geom_sf(color = "black")
-
-plot(block_gps2)
+#plot(block_gps2) # Just checking that it works. It does.
     
+
+# Set extent to y_proj 34.87 to 34.60, x_proj -120.65 to -120.59
+bounds <- as(extent(-120.65, -120.59, 34.60, 34.87), 'SpatialPolygons')
+crs(bounds) <- crs(sb_county)
+#sb_crop <- raster::crop(sb_county, bounds) # only worked once. but did work.
+
+sb_crop2 <- st_crop(sb_county, c(xmin = -120.65, xmax = -120.59, ymin = 34.63, ymax = 34.87)) # This one works and is more streamlined.
+
 ```
+
+```{r, fig.height = 10, fig.width = 2}
+
+# Trying out map code
+ggplot(sb_crop2) +
+  geom_sf(aes(fill = STATE),
+          fill = "darkgreen",
+          color = "NA",
+          show.legend = FALSE) +
+  geom_point(data = block_gps2,
+             aes(x = x_proj, y = y_proj),
+             color = "black") +
+  theme(panel.background = element_rect(fill = 'blue', colour = 'NA')) + # can change these to better colors
+  coord_sf(datum = NA) +
+  labs(x = "", 
+       y = "")
+  
+# ok now we just need to get bird data to show up on here. 
+
+# Widget 1: Dropdown/radio button selects species or species type. 
+# Widget 2: Slider scale selects date. 
+# Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South). Might be more informative to just keep at at a North/Purisima vs. South Option.
+
+# Result: Size of dot reflects count. Grouped by transect block at smallest.
+```
+
+
 
 ###Tab 3 Graphs with wrack data
 ```{r}
 
+ggplot(wrack_beach) +
+  geom_line(aes(x = survey_date, y = wrack))
 
+
+# Widget 1: Dropdown/radio button selects species or species type. 
+# Widget 2: Slider scale selects date. 
+# Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South).
+
+# Result: Graph of species or species type population time series. Limit this one to SNPL, SAND, and gulls. Grouped by Beach Sector at smallest.
+
+# Incorporate gganimate!
 
 ```
 
 
 
 ###What we need to do:
-- Background/Introductory Tab
+- Background/Introductory Tab 
+     - Can choose from jpegs in GitHub folder for informative base map.
+     - Will add a snowy plover photo. 
 - Create app shell
 - Tab 1 line graphs
 - Tab 2 map with population represented as dots
