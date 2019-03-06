@@ -1,95 +1,95 @@
-Actual Species,SpeciesName,SpeciesType
-CORA,common raven,Corvid
-BOGU,Bonaparte's gull,Gull
-CAGU,California gull,Gull
-GLGU,glaucous gull,Gull
-gull,unidentified gull,Gull
-GWGU,glaucous-winged gull,Gull
-HEEG,heerman's gull,Gull
-HERG,herring gull,Gull
-MEGU,mew gull,Gull
-RBGU,ring-billed gull,Gull
-WEGU,western gull,Gull
-AMPI,American pipit,Passerine
-BRBL,brewer's blackbird,Passerine
-LOSH,loggerhead shrike,Passerine
-AMKE,American kestrel,Raptor
-BNOW,barn owl,Raptor
-BUOW,burrowing owl,Raptor
-COHA,Cooper's hawk,Raptor
-falcon,unidentified falcon,Raptor
-FEHA,Ferruginous Hawk,Raptor
-GHOW,great horned owl,Raptor
-GOEA,golden eagle,Raptor
-MERL,merlin,Raptor
-NOHA,northern harrier,Raptor
-OSPR,osprey,Raptor
-owl,unidentified owl,Raptor
-PEFA,peregrine falcon,Raptor
-raptor,unidentified raptor,Raptor
-RTHA,red-tailed hawk,Raptor
-TUVU,turkey vulture,Raptor
-WTKI,white-tailed kite,Raptor
-BLSK,Black Skimmer,Seabird
-BRAC,Brandt's cormorant,Seabird
-BRPE,brown pelican,Seabird
-COMU,common murre,Seabird
-cormorant,unidentified cormorant,Seabird
-DCCO,double-crested cormorant,Seabird
-NOFU,northern fulmar,Seabird
-PAJA,parasitic jaeger,Seabird
-PECO,pelagic cormorant,Seabird
-SUSC,surf scoter,Seabird
-WEGR,western grebe,Seabird
-AMAV,American avocet,Shorebird
-AMGP,American golden-plover,Shorebird
-BASA,Baird's sandpiper,Shorebird
-BBPL,black-bellied plover,Shorebird
-BBSA,buff-breasted sandpiper,Shorebird
-BLOY,Black Oystercatcher,Shorebird
-BLTU,black turnstone,Shorebird
-BNST,black-necked stilt,Shorebird
-DOWI,unidentified dowitcher,Shorebird
-DUNL,dunlin,Shorebird
-GRYE,greater yellowlegs,Shorebird
-KILL,killdeer,Shorebird
-LBCU,long-billed curlew,Shorebird
-LESA,least sandpiper,Shorebird
-MAGO,marbled godwit,Shorebird
-peeps,unidentified peeps,Shorebird
-PESA,pectoral sandpiper,Shorebird
-phalarope,unidentified phalarope,Shorebird
-REKN,red knot,Shorebird
-RNPH,red-necked phalarope,Shorebird
-RUTU,ruddy turnstone,Shorebird
-SAND,sanderling,Shorebird
-SEPL,semipalmated plover,Shorebird
-SNPL,Snowy Plover,Shorebird
-SPSA,spotted sandpiper,Shorebird
-SURF,surfbird,Shorebird
-WATA,Wandering Tattler,Shorebird
-WESA,western sandpiper,Shorebird
-WHIM,whimbrel,Shorebird
-WILL,willet,Shorebird
-WIPH,Wilson's phalarope,Shorebird
-WISN,Wilson's snipe,Shorebird
-YELL,unidentified yellowlegs,Shorebird
-CATE,Caspian tern,Tern
-COTE,common tern,Tern
-ELTE,elegant tern,Tern
-FOTE,Forster's tern,Tern
-LETE,least tern,Tern
-ROTE,royal tern,Tern
-tern,unidentified tern,Tern
-GBHE,great blue heron,Wader
-GREG,great egret,Wader
-REEG,reddish egret,Wader
-SNEG,snowy egret,Wader
-SORA,sora,Wader
-WFIB,white-faced ibis,Wader
-BLBR,black brant,Waterfowl
-CAGO,Canada goose,Waterfowl
-COME,common merganser,Waterfowl
-goose,unidentified goose,Waterfowl
-MALL,mallard,Waterfowl
-merganser,unidentified merganser,Waterfowl
+Actual Species,SpeciesName,SpeciesType,analyze
+CORA,common raven,Corvid,0
+BOGU,Bonaparte's gull,Gull,0
+CAGU,California gull,Gull,1
+GLGU,glaucous gull,Gull,0
+gull,unidentified gull,Gull,0
+GWGU,glaucous-winged gull,Gull,0
+HEEG,heerman's gull,Gull,1
+HERG,herring gull,Gull,0
+MEGU,mew gull,Gull,0
+RBGU,ring-billed gull,Gull,0
+WEGU,western gull,Gull,1
+AMPI,American pipit,Passerine,0
+BRBL,brewer's blackbird,Passerine,0
+LOSH,loggerhead shrike,Passerine,0
+AMKE,American kestrel,Raptor,0
+BNOW,barn owl,Raptor,0
+BUOW,burrowing owl,Raptor,0
+COHA,Cooper's hawk,Raptor,0
+falcon,unidentified falcon,Raptor,0
+FEHA,Ferruginous Hawk,Raptor,0
+GHOW,great horned owl,Raptor,0
+GOEA,golden eagle,Raptor,0
+MERL,merlin,Raptor,0
+NOHA,northern harrier,Raptor,0
+OSPR,osprey,Raptor,0
+owl,unidentified owl,Raptor,0
+PEFA,peregrine falcon,Raptor,0
+raptor,unidentified raptor,Raptor,0
+RTHA,red-tailed hawk,Raptor,0
+TUVU,turkey vulture,Raptor,0
+WTKI,white-tailed kite,Raptor,0
+BLSK,Black Skimmer,Seabird,0
+BRAC,Brandt's cormorant,Seabird,0
+BRPE,brown pelican,Seabird,0
+COMU,common murre,Seabird,0
+cormorant,unidentified cormorant,Seabird,0
+DCCO,double-crested cormorant,Seabird,0
+NOFU,northern fulmar,Seabird,0
+PAJA,parasitic jaeger,Seabird,0
+PECO,pelagic cormorant,Seabird,0
+SUSC,surf scoter,Seabird,0
+WEGR,western grebe,Seabird,0
+AMAV,American avocet,Shorebird,0
+AMGP,American golden-plover,Shorebird,0
+BASA,Baird's sandpiper,Shorebird,0
+BBPL,black-bellied plover,Shorebird,1
+BBSA,buff-breasted sandpiper,Shorebird,0
+BLOY,Black Oystercatcher,Shorebird,0
+BLTU,black turnstone,Shorebird,0
+BNST,black-necked stilt,Shorebird,0
+DOWI,unidentified dowitcher,Shorebird,0
+DUNL,dunlin,Shorebird,1
+GRYE,greater yellowlegs,Shorebird,0
+KILL,killdeer,Shorebird,0
+LBCU,long-billed curlew,Shorebird,1
+LESA,least sandpiper,Shorebird,1
+MAGO,marbled godwit,Shorebird,1
+peeps,unidentified peeps,Shorebird,0
+PESA,pectoral sandpiper,Shorebird,0
+phalarope,unidentified phalarope,Shorebird,0
+REKN,red knot,Shorebird,0
+RNPH,red-necked phalarope,Shorebird,0
+RUTU,ruddy turnstone,Shorebird,0
+SAND,sanderling,Shorebird,1
+SEPL,semipalmated plover,Shorebird,1
+SNPL,Snowy Plover,Shorebird,1
+SPSA,spotted sandpiper,Shorebird,0
+SURF,surfbird,Shorebird,1
+WATA,Wandering Tattler,Shorebird,0
+WESA,western sandpiper,Shorebird,1
+WHIM,whimbrel,Shorebird,1
+WILL,willet,Shorebird,1
+WIPH,Wilson's phalarope,Shorebird,0
+WISN,Wilson's snipe,Shorebird,0
+YELL,unidentified yellowlegs,Shorebird,0
+CATE,Caspian tern,Tern,1
+COTE,common tern,Tern,0
+ELTE,elegant tern,Tern,1
+FOTE,Forster's tern,Tern,0
+LETE,least tern,Tern,1
+ROTE,royal tern,Tern,1
+tern,unidentified tern,Tern,0
+GBHE,great blue heron,Wader,0
+GREG,great egret,Wader,0
+REEG,reddish egret,Wader,0
+SNEG,snowy egret,Wader,0
+SORA,sora,Wader,0
+WFIB,white-faced ibis,Wader,0
+BLBR,black brant,Waterfowl,0
+CAGO,Canada goose,Waterfowl,0
+COME,common merganser,Waterfowl,0
+goose,unidentified goose,Waterfowl,0
+MALL,mallard,Waterfowl,0
+merganser,unidentified merganser,Waterfowl,0

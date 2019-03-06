@@ -98,7 +98,8 @@ wrack_df <- read_csv("wrack_updated.csv")%>%
 
 lookup_avian <- read_csv("lookup_avian.csv")%>% 
   clean_names() %>% 
-  rename(species = actual_species)
+  rename(species = actual_species) %>% 
+  filter(analyze == 1) # filtered a subset of birds to analyze
 # Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
 
 lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
@@ -132,7 +133,8 @@ snpl_clean <- snpl %>%
 # Need to join avian data with lookup_avian for species name and type info, and lookup_blocks for beach section.
 
 # Join avian species info to avian count data
-avian_sp_join <- full_join(avian, lookup_avian, by = "species") # yes, this worked.
+avian_sp_join <- full_join(avian, lookup_avian, by = "species") %>%  # yes, this worked.
+  filter(analyze == 1)
 
 # Clean up transect blocks before joining. 
 blocks <- lookup_blocks %>% 
@@ -294,7 +296,7 @@ birds_by_region <- vafb_birds_combine %>%
 ```
 
 
-```{r, fig.width=30}
+```{r, fig.width=30, include = TRUE}
 
 birds_by_region %>% 
   filter(species == "SNPL") %>% 
@@ -310,7 +312,7 @@ birds_by_region %>%
 
 ###Wrangle the wrack data to make it useful
 ```{r}
-wrack_simple <- wrack %>% 
+wrack_simple <- wrack_df %>% 
   dplyr::select(survey_week, transect_block, wrack) %>%
   filter(wrack != -9) 
 
@@ -326,23 +328,26 @@ wrack_mean_sector <- wrack_beach %>%
   group_by(survey_week, beach_section_initials) %>% 
   summarize(mean = mean(wrack))
 
+
+
 ```
 
 ###Tab 1 Graph
 ```{r, fig.width=30}
 
-birds_by_region %>% 
+
 #  filter(species == "SNPL") %>% 
 #  filter(beach == "PURISIMA") %>% 
-  ggplot() +
+  ggplot(birds_by_region) +
   geom_point(aes(x = survey_week, y = total)) +
   geom_line(aes(x = survey_week, y = total)) +
-  labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") 
+  labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
+  facet_wrap(~species_type, scale = "free")
 
 # Figure out how to make this selectable in widgets. 
 
 # Widget 1: Dropdown/radio button selects species or species type. 
-# Widget 2: Slider scale selects date. 
+# Widget 2: Slider scale selects date. Range of dates.
 # Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South).
 
 # Result: Graph of species or species type population time series. Grouped by Beach Sector at smallest.
@@ -411,9 +416,14 @@ ggplot(sb_crop2) +
 
 # Widget 1: Dropdown/radio button selects species or species type. 
 # Widget 2: Slider scale selects date. 
-# Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South). Might be more informative to just keep at at a North/Purisima vs. South Option.
+# Widget 3: Dropdown/radio button selects region (North/Purisima/South). Might be more informative to just keep at at a North/Purisima vs. South Option.
 
 # Result: Size of dot reflects count. Grouped by transect block at smallest.
+# Interactive bubble plot.
+
+
+# Use avian_block_join table to make bird pop geom_point graph where size = count. perhaps color = species if select multiple species.
+
 ```
 
 
@@ -429,9 +439,22 @@ ggplot(wrack_beach) +
 # Widget 2: Slider scale selects date. 
 # Widget 3: Dropdown/radio button selects beach sector (MIN, SHN, SHN, etc.) or region (North/Purisima/South).
 
-# Result: Graph of species or species type population time series. Limit this one to SNPL, SAND, and gulls. Grouped by Beach Sector at smallest.
+# Result: Graph of species or species type population time series. Limit this to species::SNPL, species::SAND, and species_type::gulls. Grouped by Beach Sector at smallest.
+
+# the only gulls used will be the three species from lookup_avian -> analyze = 1.
 
 # Incorporate gganimate!
+
+
+# wrack data wuse wrack_mean_sector
+# bird data use filtered birds_by_sector
+
+# on single plot x anix is time, one y axis is mean daily wrack data. sepaparated by beach sector
+# second y axis is bird population : SNPL, SAND, gull.
+
+# bar graph overlayed by line plt. bar plot is mean wrack.
+# line plot is bird. if select all 3, then separate by color.
+
 
 ```
 
