@@ -3,6 +3,7 @@
 library(shiny)
 
 
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    
@@ -66,7 +67,7 @@ ui <- fluidPage(
                        )))
               
               # Fourth Tab Panel = Time and Wrack Data                
-              tabPanel("Time and Wrack Data"),
+              tabPanel("Time and Wrack Data", # JKM removed a close-parenthesis from between ".
                        
                        ## Widget 2: Input radio buttons to allow users to select sites
                        radioButtons("radio", label = h3("Radio buttons"),
@@ -80,7 +81,7 @@ ui <- fluidPage(
                          mainPanel(
                            plotOutput("scatter")
                          )
-                       ),
+                       )) # JKM added a close-parenthesis here. fingers-crossed. deleted a comma.
               
       # Sidebar with a slider input for number of bins 
    sidebarLayout(
@@ -95,7 +96,7 @@ ui <- fluidPage(
       # Show a plot of the generated distribution
       mainPanel(
          plotOutput("distPlot")
-      )),
+      )) # JKM deleted a comma here
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {

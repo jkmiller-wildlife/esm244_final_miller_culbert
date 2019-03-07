@@ -42,45 +42,6 @@ library(raster)
 
 ```
 
-###This code chunk is old - do not use.
-```{r, include = FALSE}
-# Load data
-
-#transect <- read_csv("transect.csv") %>% 
-#  clean_names()
-
-# From this dataset we want Date, Transect block, total male, total female, unknown, juvs, and wrack
-
-#avian <- read_csv("avian.csv")%>% 
-#  clean_names()
-
-# From this dataset we want date, Transect block, species, and count
-
-```
-
-###This code chunk is old - do not use.
-```{r, include = FALSE}
-# Copied this code chunk below. Will modify for updated datasets. This code chunk only worked woth the original data.
-# Will reuse dataframe names.
-
-#snpl <- transect %>%
-#  select(survey_date, transect_block, total_male, total_female, unknown_individual, juvenile) %>% 
-#  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% 
-#  filter(snpl > 0)
-
-#snpl_clean <- snpl %>%
-#  select(survey_date, transect_block, snpl) %>% 
-#  rename(count = snpl)
-
-#wrack <- transect %>%
-#  select(survey_date, transect_block, wrack)
-
-#avian_clean <- avian %>% 
-#  select(survey_date, transect_block, species, species_name, species_type, count)
-
-```
-
-
 ###Use this to read in data.
 ```{r, include = FALSE}
 # Load all updated data. Let's try this again.
@@ -180,111 +141,13 @@ vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type)
 
 ```
 
-
 ###Use lubridate() functions to convert to times/dates
 ```{r date_time}
 vafb_birds_combine$survey_week <- mdy(vafb_birds_combine$survey_week)
 
 ```
 
-###Visualization attempts
-```{r include = FALSE}
-
-#ggplot(vafb_birds_combine) +
- # geom_point(aes(x = survey_week, y = count, color = species))
-
-# this looks awful
-
-```
-
-```{r, include = FALSE}
-
-#ggplot(vafb_birds_combine) +
-#  geom_point(aes(x = survey_week, y = count, color = species)) +
-#  facet_wrap(~species_type, scale = "free") +
-#  theme(legend.position = "none")
-
-# better. Using species type as a dropdown for the app will be useful.
-
-
-```
-
-
-```{r, include = FALSE}
-#ggplot(vafb_birds_combine) +
-#  geom_point(aes(x = survey_date, y = count)) +
-#  facet_wrap(~species_type, scale = "free") +
-#  theme(legend.position = "none")
-
-# better. Using species type as a dropdown for the app will be useful.
-# why are there 1000 terns? that doesn't seem right. Checked the data and it appears entered accurately.
-
-```
-
-
-```{r, include = FALSE}
-# Look at just shorebirds for a moment
-#vafb_birds_combine %>% 
-#  filter(species_type == "Shorebird") %>% 
-#  ggplot() +
-#  geom_point(aes(x = survey_date, y = count)) +
-#  facet_wrap(~species, scale = "free") 
-
-# better. Using species type as a dropdown for the app will be useful.
-
-
-```
-
-```{r, include = FALSE}
-# Look at just SNPL and SAND for a moment
-#vafb_birds_combine %>% 
- # filter(species == "SNPL" | species == "SAND") %>% 
- # ggplot() +
-#  geom_point(aes(x = survey_date, y = count)) +
-#  facet_wrap(~species, scale = "free") 
-
-# I feel like something wierd is going on with the dates. Wrangle that next. I don't think it is sorted chronologically.
-# Maybe by combining with wrack data it will sort out.
-```
-
-```{r, include = FALSE}
-# Look at just SNPL separated by beach sector. Maybe this will help sort out dates.
-#vafb_birds_combine %>% 
-#  filter(species == "SNPL") %>% 
-#  ggplot() +
-#  geom_point(aes(x = survey_date, y = count)) +
-#  facet_wrap(~beach, scale = "free") 
-
-# Why is Jalama still here? I removed it earlier, yes? - ok fixed it in snpl_clean dataframe.
-```
-
-
-```{r, fig.width=30, include = FALSE}
-# Look at just SNPL on North Beaches. Maybe this will help sort out dates.
-vafb_birds_combine %>% 
-  filter(species == "SNPL") %>% 
-  filter(beach == "NORTH") %>% 
-  ggplot() +
-  geom_point(aes(x = survey_week, y = count)) 
-
-
-# Look at just SNPL on Purisima Beaches. Maybe this will help sort out dates.
-vafb_birds_combine %>% 
-  filter(species == "SNPL") %>% 
-  filter(beach == "PURISIMA") %>% 
-  ggplot() +
-  geom_point(aes(x = survey_week, y = count, color = beach_section_initials)) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
-# ok, for the graphs we need a count for each beach sector. Think about how fine scale we want to split this up.
-# also, dates are sorted by month/date/year numerically. Not chronologically. Hopefully lubridate can help with this.
-# Sorted out dates with lubridate. - fixed it in prior code chunk
-# Also, maybe can try re-filtering so we include blocks with 0 counts of birds.
-
-```
-
 ###For the time series plots, group by beach section. Use these dataframes for making graphs!!!
-
 ```{r}
 # Sum counts for each beach section. can then plot max birds per beach section over time. Keep transect block separations for map.
 
@@ -300,7 +163,7 @@ birds_by_region <- vafb_birds_combine %>%
 ```
 
 
-```{r, fig.width=30, include = TRUE}
+```{r, fig.width=30, include = FALSE}
 
 birds_by_region %>% 
   filter(species == "SNPL") %>% 
