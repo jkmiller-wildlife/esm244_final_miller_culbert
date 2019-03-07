@@ -2,6 +2,7 @@
 
 library(shiny)
 
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    
@@ -9,6 +10,7 @@ ui <- fluidPage(
    titlePanel("Taking Flight: A Look into the Birds of Vandenberg Air Force Base"),
    
    navbarPage("Click the tabs below to learn more about the birds that live at Vandenberg Air Force Base in Lompoc, California.",
+              
               # First Tab Panel = Introduction/Summary
               tabPanel("Summary",
                        h1("App Summary"),
@@ -16,18 +18,33 @@ ui <- fluidPage(
                        h1("Data"),
                        p("Since March 2012, weekly transect surveys were conducted at VAFB beaches. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
                        p("Thousands of data points from bird count transects have been collected by field biologists since 2012. The data are not in tidy format. Data have not been recorded for each bird observed-- bird counts are aggregated and reported at the end of each transect and/or field survey. We will be able to convert the data to tidy format if necessary."),
-                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys:  
-                        Date of survey
-                        Location of survey site
-                        Bird type: Category (shorebird, gull, or raptor), Species
-                        Species/Category abundance: # of observed snowy plovers (based on age & sex), shorebirds, gulls, or raptors 
-                        Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)")), #figure out how to insert bullet points
+                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys:"),  
+                        tags$li("Date of survey"),
+                        tags$li("Location of survey site"),
+                        tags$li("Bird type: Category (shorebird, gull, or raptor), Species"),
+                        tags$li("Species/Category abundance: # of observed snowy plovers (based on age & sex), shorebirds, gulls, or raptors"), 
+                        tags$li("Wrack Index: category assigned to abundance of fresh wrack (surf-cast kelp) on the beach (e.g. a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)"))), 
               
               
               # Second Tab Panel = Time and Species Count Data    
-              tabPanel("Time and Species Count Data",
+              tabPanel("Time and Species Count Data"),
                           
-                          # Sidebar with a slider input for number of bins 
+                       # Widget 1: Dropdown menu & radio button showing species type    
+                       sidebarLayout(
+                         sidebarPanel(
+                           #creating select inputs
+                           selectInput('x4', 'X4', choices = list(
+                             Eastern = c(`New York` = 'NY', `New Jersey` = 'NJ'),
+                             Western = c(`California` = 'CA', `Washington` = 'WA')
+                           ), selectize = FALSE),
+                           
+                           #Widget 2: Time scale slider
+                           
+                           #Widget 3: Dropdown & radio button with Region & Beach Sector
+                       
+                       
+                       
+                       # Sidebar with a slider input for number of bins 
                           sidebarLayout(
                             sidebarPanel(
                               sliderInput("bins",
@@ -90,7 +107,7 @@ ui <- fluidPage(
               
    )
    
-)
+),
    
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
@@ -106,7 +123,7 @@ ui <- fluidPage(
       mainPanel(
          plotOutput("distPlot")
       )
-   )
+   ),
 
 
 # Define server logic required to draw a histogram
