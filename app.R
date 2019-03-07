@@ -24,18 +24,19 @@ ui <- fluidPage(
               # Second Tab Panel = Time and Species Count Data    
               tabPanel("Time and Species Count Data",
                     # Sidebar with a slider input for number of bins 
-                          sidebarLayout(
-                            sidebarPanel(
-                              sliderInput("bins",
-                                          "Number of bins:",
-                                          min = 1,
-                                          max = 50,
-                                          value = 30),
-                              
-                              selectInput("color", 
-                                          "Select histogram color:",
-                                          choices = c("purple","blue","orange"))
-                            ),
+                    sidebarLayout(
+                      sidebarPanel(
+                        sliderInput("point_size", 
+                                    label = "Choose year range:", 
+                                    min = 2012, max = 2018, value = 1),
+                        radioButtons("radio", 
+                                     label = "Choose observation site:",
+                                     choices = list("California", "Oregon", "Washington")),
+                        radioButtons("color", 
+                                     label = "Choose Color:", 
+                                     choices = list("blue","purple","orange"))
+                        
+                      ),
                             
                             # Show a plot of the generated distribution
                             mainPanel(
