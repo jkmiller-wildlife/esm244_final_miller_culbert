@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, include = FALSE}
 # Install new packages
 #install.packages("rgdal")
+# install.packages("gridExtra")
+# install.packages("grid") # package didn't work
 ```
 
 
@@ -34,6 +36,8 @@ library(spatstat)
 library(maptools)
 library(sp)
 library(raster)
+#library(gridExtra) # these apckages are for turnding graphs into grid plots I think. Didn't work.
+#library(grid) # didn't work
 
 
 ```
@@ -431,9 +435,28 @@ ggplot(sb_crop2) +
 ###Tab 3 Graphs with wrack data
 ```{r}
 
-ggplot(wrack_beach) +
-  geom_line(aes(x = survey_week, y = wrack))
+wrack_shore_gull <- birds_by_sector %>% 
+  filter(species == "SNPL" | species == "SAND" | species_type == "Gull") %>% 
+  mutate(sp_2 = case_when(
+    species == "SNPL" ~ "SNPL",
+    species == "SAND" ~ "SAND",
+    species == "CAGU" ~ "Gull",
+    species == "WEGU" ~ "Gull",
+    species == "HEEG" ~ "Gull"
+  ))
 
+wrack_plot <- ggplot(wrack_mean_sector, aes(x = survey_week, y = mean)) +
+  geom_col() 
+wrack_plot
+
+shore_gull_plot <- ggplot(wrack_shore_gull, aes(x = survey_week, y = total)) +  
+  geom_line(aes(color = sp_2)) 
+shore_gull_plot
+
+
+# Tried this and it didn't work.
+# http://steffi.ca/thinkR/tutorials/twoplots/
+#grid.arrange(wrack_plot,shore_gull_plot, heights = c(1/5, 4/5))
 
 # Widget 1: Dropdown/radio button selects species or species type. 
 # Widget 2: Slider scale selects date. 
@@ -573,4 +596,5 @@ Robinette, D.P, J.K. Miller, and J. Howar. 2017. Monitoring and Management of th
 
 ##### Challenges
 - Data wrangling a problematic data set
+- really allowed me to identify data inconsistencies
 
