@@ -48,16 +48,16 @@ View(transect_select)
 ```{r}
 #Data wrangling for avian data - double-check variables that we want to keep
 
-avian_select <- avian %>%
+avian_select_2 <- avian %>%
   select(survey_date, species, count,transect_block) %>% 
   rownames_to_column() %>% 
   arrange(species) 
 
-View(avian_select)
+View(avian_select_2)
 
 #Quick histogram
 
-avian_hist <- ggplot(avian_select, aes(x = count)) +
+avian_hist <- ggplot(avian_select2, aes(x = count)) +
   geom_histogram(aes(fill = species)) +
   facet_wrap(~species, scales = "free")
 
