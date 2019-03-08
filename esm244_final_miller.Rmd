@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("rgdal")
 # install.packages("gridExtra")
 # install.packages("grid") # package didn't work
+install.packages("shinythemes")
 ```
 
 
@@ -103,14 +104,14 @@ avian_sp_join <- full_join(avian, lookup_avian, by = "species") %>%  # yes, this
 
 # Clean up transect blocks before joining. 
 blocks <- lookup_blocks %>% 
-  dplyr::select(transect_block, beach_section_initials, beach)
+  dplyr::select(transect_block, beach_section_initials, beach, y_proj, x_proj)
 
 # Join blocks to avian
 avian_block_join <- full_join(avian_sp_join, blocks, by = "transect_block")
 
 # Clean up columns and filter for only North, Purisima, and South beaches 
 avian_clean <- avian_block_join %>% 
-  dplyr::select(survey_week, transect_block, beach_section_initials, beach, species, species_name, species_type, count) %>% 
+  dplyr::select(survey_week, transect_block, y_proj, x_proj, beach_section_initials, beach, species, species_name, species_type, count) %>% 
   filter(beach == "NORTH" | beach == "PURISIMA" | beach == "SOUTH") %>% 
   filter(species != "NA")
 
@@ -153,8 +154,9 @@ vafb_birds_combine$survey_week <- mdy(vafb_birds_combine$survey_week)
 
 
 birds_by_sector <- vafb_birds_combine %>% 
-  group_by(survey_week, beach_section_initials, species, species_type) %>% 
+  group_by(survey_week, beach_section_initials, beach, species, species_type) %>% 
   summarize(total = sum(count))
+
 
 birds_by_region <- vafb_birds_combine %>% 
   group_by(survey_week, beach, species, species_type) %>% 
@@ -280,6 +282,16 @@ ggplot(sb_crop2) +
        y = "")
   
 # ok now we just need to get bird data to show up on here. 
+
+# I think what I need to do for bird data is attach bird data to block_gps2 as attributes. Or use tmap.
+
+map_wrack <- tm_shape(sb_crop2) +
+  
+######################  
+  
+# USE vafb_birds_combine. it has gps attached now.
+
+#########################
 
 # Widget 1: Dropdown/radio button selects species or species type. 
 # Widget 2: Slider scale selects date. 
