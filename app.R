@@ -7,26 +7,33 @@ library(shinythemes)
 
 #### User Interface: Define UI for application 
 
-ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti.
+ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti. # JKM likes superhero and darkly.
                 
    
    # Title Panel
    titlePanel("Taking Flight: A Look into the Birds of Vandenberg Air Force Base"), #main app title
    
-   navbarPage("Click the tabs below to learn more about birds at Vandenberg Air Force Base in Lompoc, California.", #navigation bar title
+   navbarPage("Learn more about coastal bird population dynamics at VAFB in Central California.", #navigation bar title
+              # depending on the monitor, the tabs are either to the side of 'Click the tabs...' or below. any preference? Just delete word 'below'? How about 'Learn more about birds at Vandenberg Air Force Base in Central California'
+              # original 'Click the tabs below to learn more about birds at Vandenberg Air Force Base in Lompoc, California'
             
               # First Tab Panel = Introduction/Summary
-              
+
               tabPanel("About", #title of tab
-                       
+
+              # Photo of banded snowy plover in side bar panel. If this photo can't be resized small enough and look good let's use the drawing. It's very nice.
+              # The photo size is formatted so it looks good on my browser/screen. It might be best to use my laptop for the presentation so there are no formatting surprises because the monitor makes a difference.
+              sidebarPanel(img(src='snpl_small_2.jpg', align = "left")),
+              
+              # Main panel with info. I want this shown to the right of the photo in the sidebarPanel.
+                           mainPanel(              
                        h1("App Summary"), #subtitle
-                       p("This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird, gull, and raptor abundance, and changes in beach habitat characteristics at VAFB."),
+                       p("This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird and gull abundance, and changes in beach habitat at VAFB."),
                        h1("Data"), #subtitle
-                       p("Since March 2012, weekly transect surveys were conducted at VAFB beaches. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
-                       p("Thousands of data points from bird count transects have been collected by field biologists since 2012. Bird counts have been aggregated and reported at the end of each transect and/or field survey. We will be able to convert the data to tidy format if necessary."),
-                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys: survey date and location, bird type (shorebird, gull, raptor), bird species, species/category abundance (recorded as number of observed birds, and wrack index (defined as the abundance of fresh surf-cast kelp on the beach, where a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)."), 
+                       p("Since March 2011, weekly transect surveys were conducted at VAFB beaches. North and South VAFB beaches were separated by distinct beach sectors. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
+                       p("Thousands of data points from bird count transects have been collected by field biologists since 2011. Bird counts have been aggregated and reported at the end of each transect and/or field survey. Data from weekly and semi-weekly surveys include: survey date and location, bird type (shorebird or gull), bird species, species/category abundance (recorded as number of observed birds, and wrack index (defined as the abundance of fresh surf-cast kelp on the beach, where a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)."), 
                        h1("Authors"), 
-                       p("This app was created in Shiny by Jamie Miler and Kristan Culbert for ESM 244 (Advanced Data Analysis) - Winter 2019.")),
+                       p("This app was created in Shiny by Jamie Miler and Kristan Culbert for ESM 244 (Advanced Data Analysis) - Winter 2019. Photo by Ross Griswold."))),
               
               # Second Tab Panel = Time and Species Count Data
               
@@ -44,21 +51,21 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
               #App users will be able to use the time slider to scroll through temporal data and species count data, which will generate a line graph. 
               
               
-              tabPanel("Time and Species Count Data",
-                       h1("Time and Species Count Data"),
+              tabPanel("Species Abundance Over Time",
+                       h1("Species and Species Type by Beach - Time Series"),
                     # Sidebar with a slider input for number of bins 
                     sidebarLayout(
                       sidebarPanel(
                         dateRangeInput("survey_week", 
-                                    label = "Choose time range:"),
+                                    label = "Choose date range:"),
                         
                         radioButtons("species_type", 
                                      label = "Select species type:",
-                                     choices = list("California", "Oregon", "Washington")),
+                                     choices = list("Shorebird", "Gull", "All")),
                        
                          radioButtons("beach", 
-                                     label = "Select beach sector:", 
-                                     choices = list("blue","purple","orange"))
+                                     label = "Select beach region:", 
+                                     choices = list("North","Purisima","South"))
                         
                       ),
                             
@@ -84,7 +91,7 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
               
               #App users will be able to view changes in species density over time by selecting one or more species, and projecting species density onto a map of the project area. 
               
-              tabPanel("Species Abundance and Study Map",
+              tabPanel("Species Abundance by Location",
                        h1("Species Abundance and Study Map"),
                        # Sidebar with a slider input for number of bins 
                        sidebarLayout(
@@ -92,13 +99,13 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                            dateRangeInput("point_size", 
                                           label = "Choose year range:"),
                            
-                           radioButtons("radio", 
+                           radioButtons("species_type", 
                                         label = "Select species type:",
-                                        choices = list("California", "Oregon", "Washington")),
+                                        choices = list("Shorebird", "Gull", "All")),
                            
-                           radioButtons("color", 
-                                        label = "Select beach sector:", 
-                                        choices = list("blue","purple","orange"))
+                           radioButtons("beach", 
+                                        label = "Select beach region:", 
+                                        choices = list("North","Purisima","South"))
                            
                          ),
                          
@@ -124,22 +131,22 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
               
               #App users will be able to use the time slider to scroll through wrack index data and shorebird count data, which will generate a line graph. 
               
-              tabPanel("Time and Wrack Data", 
-                       h1("Time and Wrack Data"),
+              tabPanel("Habitat Change Over Time", 
+                       h1("Shorebird, Gull, and Relative Wrack Abundance - Time Series"),
                        
                        # Sidebar with a slider input for number of bins 
                        sidebarLayout(
                          sidebarPanel(
                            dateRangeInput("point_size", 
-                                          label = "Choose year range:"),
+                                          label = "Choose date range:"),
                            
-                           radioButtons("radio", 
-                                        label = "Select species type:",
-                                        choices = list("California", "Oregon", "Washington")),
+                           radioButtons("species_type", 
+                                        label = "Select species:",
+                                        choices = list("Snowy Plover", "Sanderling", "Gulls")),
                            
-                           radioButtons("color", 
-                                        label = "Select beach sector:", 
-                                        choices = list("blue","purple","orange"))
+                           radioButtons("beach", 
+                                        label = "Select beach region:", 
+                                        choices = list("North","Purisima","South"))
                            
                          ),
                          
