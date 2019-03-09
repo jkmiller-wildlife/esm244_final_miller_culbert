@@ -17,14 +17,16 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
             
               # First Tab Panel = Introduction/Summary
               
-              tabPanel("Summary", #title of tab
+              tabPanel("About", #title of tab
                        
                        h1("App Summary"), #subtitle
                        p("This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird, gull, and raptor abundance, and changes in beach habitat characteristics at VAFB."),
                        h1("Data"), #subtitle
                        p("Since March 2012, weekly transect surveys were conducted at VAFB beaches. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
                        p("Thousands of data points from bird count transects have been collected by field biologists since 2012. Bird counts have been aggregated and reported at the end of each transect and/or field survey. We will be able to convert the data to tidy format if necessary."),
-                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys: survey date and location, bird type (shorebird, gull, raptor), bird species, species/category abundance (recorded as number of observed birds, and wrack index (defined as the abundance of fresh surf-cast kelp on the beach, where a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack).")),
+                       p("We will use the following variables in our app, which include data from weekly and semi-weekly field surveys: survey date and location, bird type (shorebird, gull, raptor), bird species, species/category abundance (recorded as number of observed birds, and wrack index (defined as the abundance of fresh surf-cast kelp on the beach, where a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)."), 
+                       h1("Authors"), 
+                       p("This app was created in Shiny by Jamie Miler and Kristan Culbert for ESM 244 (Advanced Data Analysis) - Winter 2019.")),
               
               # Second Tab Panel = Time and Species Count Data
               
@@ -158,7 +160,7 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
 
 server <- function(input, output) {
       
-  ##Generate outputs for Tab 2: Generate a line graph using year range input data, species, count data to create a line graph. 
+  ##Generate Tab 2 Outputs: Generate a line graph using year range input data, species, count data to create a line graph. 
   
      output$beach_species_plot <- renderPlot({
       
@@ -166,15 +168,49 @@ server <- function(input, output) {
       x    <- faithful[, 2] 
       bins <- seq(min(x), max(x), length.out = input$bins + 1)
       
-      # draw the histogram with the specified number of bins
+      # draw line graph with inputs from species, count, and year range
       beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
         geom_point(aes(x = survey_week, y = total)) +
         geom_line(aes(x = survey_week, y = total)) +
         labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
         facet_wrap(~species_type, scale = "free")
+     })
       
-   })
-}
+  ##Generate Tab 3 Outputs: Species Abundance and Study Map 
+      output$beach_species_plot <- renderPlot({
+        
+        # generate bins based on input$bins from ui.R
+        x    <- faithful[, 2] 
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        # draw the histogram with the specified number of bins
+        beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
+          geom_point(aes(x = survey_week, y = total)) +
+          geom_line(aes(x = survey_week, y = total)) +
+          labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
+          facet_wrap(~species_type, scale = "free")
+      })
+        
+  ##Generate Tab 4 Outputs: Time and Wrack Data, SNPL/SAND/gull graphs
+        output$beach_species_plot <- renderPlot({
+          
+          # generate bins based on input$bins from ui.R
+          x    <- faithful[, 2] 
+          bins <- seq(min(x), max(x), length.out = input$bins + 1)
+          
+          # draw the histogram with the specified number of bins
+          beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
+            geom_point(aes(x = survey_week, y = total)) +
+            geom_line(aes(x = survey_week, y = total)) +
+            labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
+            facet_wrap(~species_type, scale = "free")
+        })
+      
+      
+   }
+
+
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
