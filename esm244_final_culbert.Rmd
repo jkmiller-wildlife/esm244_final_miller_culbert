@@ -268,7 +268,7 @@ sb_crop2 <- st_crop(sb_county, c(xmin = -120.65, xmax = -120.59, ymin = 34.63, y
 ```{r, fig.height = 10, fig.width = 2}
 
 # Trying out map code
-ggplot(sb_crop2) +
+map <- ggplot(sb_crop2) +
   geom_sf(aes(fill = STATE),
           fill = "darkgreen",
           color = "NA",
