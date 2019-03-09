@@ -164,7 +164,7 @@ server <- function(input, output) {
   
      output$beach_species_plot <- renderPlot({
       
-       # generate bins based on input$bins from ui.R
+       # definte inputs for plot from ui.R
       x    <- faithful[, 2] 
       bins <- seq(min(x), max(x), length.out = input$bins + 1)
       
@@ -177,33 +177,38 @@ server <- function(input, output) {
      })
       
   ##Generate Tab 3 Outputs: Species Abundance and Study Map 
-      output$beach_species_plot <- renderPlot({
+      output$map <- renderPlot({
         
-        # generate bins based on input$bins from ui.R
+        # definte inputs for plot from ui.R
         x    <- faithful[, 2] 
         bins <- seq(min(x), max(x), length.out = input$bins + 1)
         
-        # draw the histogram with the specified number of bins
-        beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
-          geom_point(aes(x = survey_week, y = total)) +
-          geom_line(aes(x = survey_week, y = total)) +
-          labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
-          facet_wrap(~species_type, scale = "free")
+        # draw map using inputs 
+        map <- ggplot(sb_crop2) +
+          geom_sf(aes(fill = STATE),
+                  fill = "darkgreen",
+                  color = "NA",
+                  show.legend = FALSE) +
+          geom_point(data = block_gps2,
+                     aes(x = x_proj, y = y_proj),
+                     color = "black") +
+          theme(panel.background = element_rect(fill = 'blue', colour = 'NA')) + # can change these to better colors
+          coord_sf(datum = NA) +
+          labs(x = "", 
+               y = "")
       })
         
   ##Generate Tab 4 Outputs: Time and Wrack Data, SNPL/SAND/gull graphs
-        output$beach_species_plot <- renderPlot({
+        output$shore_gull_plot <- renderPlot({
           
           # generate bins based on input$bins from ui.R
           x    <- faithful[, 2] 
           bins <- seq(min(x), max(x), length.out = input$bins + 1)
           
           # draw the histogram with the specified number of bins
-          beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
-            geom_point(aes(x = survey_week, y = total)) +
-            geom_line(aes(x = survey_week, y = total)) +
-            labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
-            facet_wrap(~species_type, scale = "free")
+          shore_gull_plot <- ggplot(wrack_shore_gull, aes(x = survey_week, y = total)) +  
+            geom_line(aes(color = sp_2)) 
+          shore_gull_plot
         })
       
       
