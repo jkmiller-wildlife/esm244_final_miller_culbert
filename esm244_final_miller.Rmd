@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("rgdal")
 # install.packages("gridExtra")
 # install.packages("grid") # package didn't work
-install.packages("shinythemes")
+# install.packages("shinythemes")
 ```
 
 
@@ -162,6 +162,8 @@ birds_by_region <- vafb_birds_combine %>%
   group_by(survey_week, beach, species, species_type) %>% 
   summarize(total = sum(count))
 
+write_csv(birds_by_region, "birds_by_region.csv")
+
 ```
 
 
@@ -285,7 +287,7 @@ ggplot(sb_crop2) +
 
 # I think what I need to do for bird data is attach bird data to block_gps2 as attributes. Or use tmap.
 
-map_wrack <- tm_shape(sb_crop2) +
+#map_wrack <- tm_shape(sb_crop2) +
   
 ######################  
   
