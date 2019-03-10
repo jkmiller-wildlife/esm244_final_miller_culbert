@@ -11,26 +11,27 @@ birds_by_region <- read_csv("birds_by_region.csv")
 
 birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
+wrack_avian_tab3 <- read_csv("wrack_avian_tab3.csv")
+
+wrack_avian_tab3$survey_week <- mdy(wrack_avian_tab3$survey_week)
+
 #############################################
 
 #### User Interface: Define UI for application 
 
 ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti. # JKM likes superhero and darkly.
-                
-                
+
                 # Title Panel
                 titlePanel("Taking Flight: A Look into the Birds of Vandenberg Air Force Base"), #main app title
                 
                 navbarPage("Learn more about coastal bird population dynamics at VAFB in Central California.", #navigation bar title
-                           # depending on the monitor, the tabs are either to the side of 'Click the tabs...' or below. any preference? Just delete word 'below'? How about 'Learn more about birds at Vandenberg Air Force Base in Central California'
-                           # original 'Click the tabs below to learn more about birds at Vandenberg Air Force Base in Lompoc, California'
-                           
+
                            # First Tab Panel = Introduction/Summary
                            
                            tabPanel("About", #title of tab
                                     
-                                    # Photo of banded snowy plover in side bar panel. If this photo can't be resized small enough and look good let's use the drawing. It's very nice.
-                                    # The photo size is formatted so it looks good on my browser/screen. It might be best to use my laptop for the presentation so there are no formatting surprises because the monitor makes a difference.
+                                    # Photo of banded snowy plover in side bar panel. 
+                                    # The photo size is formatted so it looks good on my browser/screen. 
                                     sidebarPanel(img(src='snpl_small_2.jpg', align = "left")),
                                     
                                     # Main panel with info. I want this shown to the right of the photo in the sidebarPanel.
@@ -61,7 +62,6 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                            
                            tabPanel("Species Abundance Over Time",
                                     h1("Species and Species Type by Beach - Time Series"),
-                                    # Sidebar with a slider input for number of bins 
                                     sidebarLayout(
                                       sidebarPanel(
                                         dateRangeInput("survey_week_1", 
@@ -90,8 +90,59 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                       mainPanel(
                                         plotOutput("beach_species_plot")
                                       )
-                                    ))))
+                                    )),
 
+# Fourth Tab Panel = Time and Wrack Data, SNPL/SAND/gull graphs
+
+#Widget 1
+#Input: Time by year (2012 - 2018)
+#Type: Choose year range, which will allow app users to examine progression of data on a temporal scale. 
+
+#Widget 2
+#Input: Location of observation site
+#Type: Radio button, which will allow app users to switch between observation sites. 
+
+#Widget 3
+#Input: Shorebird species
+#Type: Checkboxes or multiple select box, which will allow app users to compare multiple species on a single output. 
+
+#App users will be able to use the time slider to scroll through wrack index data and shorebird count data, which will generate a line graph. 
+
+tabPanel("Habitat Change Over Time", 
+         h1("Shorebird, Gull, and Relative Wrack Abundance - Time Series"),
+         
+         # Sidebar with a slider input for number of bins 
+         sidebarLayout(
+           sidebarPanel(
+ #            dateRangeInput("survey_week_3", 
+  #                          label = "Choose Date Range:",
+   #                         start = "2011-03-01", 
+    #                        end = "2019-03-01",
+     #                       min = "2011-03-01", 
+      #                      max ="2019-03-01"),
+              radioButtons("species_type_3", 
+                          label = "Select Species:",
+                          choices = list("Snowy Plover" = "SNPL", 
+                                         "Sanderling" = "SAND",
+                                         "Gulls" = "Gull")),
+             selectInput("beach_3", 
+                         label = "Select Beach Section:", 
+                         choices = list("Minuteman" = "MIN",
+                                        "Shuman North" = "SHN",
+                                        "Shuman South" = "SHS",
+                                        "San Antonio" = "SAN",
+                                        "Purisima North" = "PNO",
+                                        "Wall Beach" = "WAL",
+                                        "Surf North" = "SNO",
+                                        "Surf South" = "SSO"))
+             ),
+           
+           
+           # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
+           mainPanel(
+             plotOutput("wrack_avian_plot")
+           )
+         ))))
 
 
 
@@ -109,8 +160,12 @@ server <- function(input, output) {
     {
       birds_by_region %>% 
         filter(survey_week >= input$survey_week_1[1], survey_week <= input$survey_week_1[2]) %>% 
-        filter(beach == input$beach_1[1] | beach == input$beach_1[2] | beach == input$beach_1[3]) %>%
-        filter(species_type == input$species_type_1[1] | species_type == input$species_type_1[2] | species_type == input$species_type_1[3]) #%>%
+        filter(beach == input$beach_1[1] | 
+                 beach == input$beach_1[2] | 
+                 beach == input$beach_1[3]) %>%
+        filter(species_type == input$species_type_1[1] | 
+                 species_type == input$species_type_1[2] | 
+                 species_type == input$species_type_1[3]) #%>%
       #      mutate(survey_week = mdy(survey_week)) %>% 
       #      mutate(total = as.numeric(total))
       #      mutate(beach = as.factor(beach)) %>%
@@ -149,7 +204,66 @@ server <- function(input, output) {
       theme_classic()
   })
   
+  ######################################
+  
+  ##Generate Tab 4 Outputs: Time and Wrack Data, SNPL/SAND/gull graphs
+    
+    # specifies date range for survey_date
+    
+    wrack_avian <- reactive(
+      {
+        wrack_avian_tab3 %>% 
+ #         filter(survey_week >= input$survey_week_3[1], survey_week <= input$survey_week_3[2]) %>% 
+          filter(beach_section_initials == input$beach_3[1]
+                 | beach_section_initials == input$beach_3[2]
+                 | beach_section_initials == input$beach_3[3]
+                 | beach_section_initials == input$beach_3[4]
+                 | beach_section_initials == input$beach_3[5]
+                 | beach_section_initials == input$beach_3[6]
+                 | beach_section_initials == input$beach_3[7]
+                 | beach_section_initials == input$beach_3[8]) %>%
+          filter(species_2 == input$species_type_3[1] | 
+                   species_2 == input$species_type_3[2] | 
+                   species_2 == input$species_type_3[3])
+      }
+    )
+    
+    output$wrack_avian_plot <- renderPlot({
+      
+      ggplot(wrack_avian(), 
+             aes(x = survey_week, y = total)) +
+        geom_col(aes(color = mean_wrack)) +
+ #       geom_line(aes(color = mean_wrack)) +
+#        scale_fill_manual(limits = c("Snowy Plover", "Sanderling", "Gulls"), 
+ #                         values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
+        scale_y_continuous(expand = c(0,0)) +
+        scale_x_date(breaks = as.Date(c("2011-03-01","2011-09-01",
+                                        "2012-03-01","2012-09-01",
+                                        "2013-03-01","2013-09-01",
+                                        "2014-03-01","2014-09-01",
+                                        "2015-03-01","2015-09-01",
+                                        "2016-03-01","2016-09-01",
+                                        "2017-03-01","2017-09-01",
+                                        "2018-03-01","2018-09-01",
+                                        "2019-03-01")), 
+                     labels = c("03/2011","09/2011",
+                                "03/2012","09/2012",
+                                "03/2013","09/2013",
+                                "03/2014","09/2014",
+                                "03/2015","09/2015",
+                                "03/2016","09/2016",
+                                "03/2017","09/2017",
+                                "03/2018","09/2018",
+                                "03/2019")) +
+        labs(x = "Date", y = "Number Birds Observed") +
+        #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        theme_classic()
+    })
+  
+  
 }
+
+
 
 
 # Run the application 
