@@ -70,13 +70,13 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                     start = "2011-03-01", end = "2019-02-28",
                                     min = "2011-03-01", max ="2019-02-28"),
                         
-                        radioButtons("species_type_1", 
+                        selectInput("species_type_1", 
                                      label = "Select species type:",
-                                     choices = list("Shorebird", "Gull", "Tern")),
+                                     choices = list("Shorebird" = "Shorebird", "Gull" = "Gull", "Tern" = "Tern")),
                        
-                         radioButtons("beach_1", 
+                        radioButtons("beach_1", 
                                      label = "Select beach region:", 
-                                     choices = list("North","Purisima","South"))
+                                     choices = list("North" = "NORTH","Purisima" = "PURISIMA","South" = "SOUTH"))
                         
                       ),
 
@@ -104,19 +104,20 @@ date_range <- reactive(
   {
     birds_by_region %>% 
       filter(survey_week >= input$survey_week_1[1], survey_week <= input$survey_week_1[2]) %>% 
-      filter(beach == input$beach_1[]) %>%
-      filter(species_type == input$species_type_1[]) %>%
-      mutate(survey_week = mdy(survey_week))%>% 
-      mutate(beach = as.factor(beach)) %>%
-      mutate(species_type = as.factor(species_type))       
+      filter(beach == input$beach_1[1] | beach == input$beach_1[2] | beach == input$beach_1[3]) %>%
+      filter(species_type == input$species_type_1[1] | species_type == input$species_type_1[2] | species_type == input$species_type_1[3]) #%>%
+#      mutate(survey_week = mdy(survey_week)) %>% 
+#      mutate(total = as.numeric(total))
+#      mutate(beach = as.factor(beach)) %>%
+ #     mutate(species_type = as.factor(species_type))
     }
   )
   
      output$beach_species_plot <- renderPlot({
 
      ggplot(date_range(), 
-            aes(x = survey_week, y = total)) + 
-        geom_point() +
+            aes(x = survey_week, y = total)) +  
+#        geom_point() +
         geom_line() +
    scale_x_date(breaks = as.Date(c("2011-03-01","2011-05-01","2011-07-01","2011-09-01","2011-11-01","2012-01-01",
                                    "2012-03-01","2012-05-01","2012-07-01","2012-09-01","2012-11-01","2013-01-01",

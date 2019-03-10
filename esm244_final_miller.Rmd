@@ -159,7 +159,7 @@ birds_by_sector <- vafb_birds_combine %>%
 
 
 birds_by_region <- vafb_birds_combine %>% 
-  group_by(survey_week, beach, species, species_type) %>% 
+  group_by(survey_week, beach, species_type) %>% # removed species
   summarize(total = sum(count))
 
 write_csv(birds_by_region, "birds_by_region.csv")
