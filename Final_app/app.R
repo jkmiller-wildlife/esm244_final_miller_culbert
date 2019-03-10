@@ -66,16 +66,22 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                       sidebarPanel(
                                         dateRangeInput("survey_week_1", 
                                                        label = "Choose date range:",
-                                                       start = "2011-03-01", end = "2019-02-28",
-                                                       min = "2011-03-01", max ="2019-02-28"),
+                                                       start = "2011-03-01", 
+                                                       end = "2019-03-01",
+                                                       min = "2011-03-01", 
+                                                       max ="2019-03-01"),
                                         
                                         selectInput("species_type_1", 
                                                     label = "Select species type:",
-                                                    choices = list("Shorebird" = "Shorebird", "Gull" = "Gull", "Tern" = "Tern")),
+                                                    choices = list("Shorebird" = "Shorebird", 
+                                                                   "Gull" = "Gull", 
+                                                                   "Tern" = "Tern")),
                                         
                                         radioButtons("beach_1", 
                                                      label = "Select beach region:", 
-                                                     choices = list("North" = "NORTH","Purisima" = "PURISIMA","South" = "SOUTH"))
+                                                     choices = list("North" = "NORTH",
+                                                                    "Purisima" = "PURISIMA",
+                                                                    "South" = "SOUTH"))
                                         
                                       ),
                                       
@@ -116,7 +122,7 @@ server <- function(input, output) {
     
     ggplot(date_range(), 
            aes(x = survey_week, y = total)) +
-      geom_col(aes(fill = species_type)) +
+      geom_col(aes(fill = species_type), show.legend = FALSE) +
       scale_y_continuous(expand = c(0,0)) +
       #         scale_x_date(breaks = as.Date(c("2011-03-01","2011-05-01","2011-07-01","2011-09-01","2011-11-01","2012-01-01",
       #                                  "2012-03-01","2012-05-01","2012-07-01","2012-09-01","2012-11-01","2013-01-01",
@@ -127,17 +133,17 @@ server <- function(input, output) {
       #                             "2017-03-01","2017-05-01","2017-07-01","2017-09-01","2017-11-01","2018-01-01",
       #                            "2018-03-01","2018-05-01","2018-07-01","2018-09-01","2018-11-01","2019-01-01",
       #                           "2019-02-01"))) +
-      scale_x_date(breaks = as.Date(c("2011-03-01",
-                                      "2012-03-01",
-                                      "2013-03-01",
-                                      "2014-03-01",
-                                      "2015-03-01",
-                                      "2016-03-01",
-                                      "2017-03-01",
-                                      "2018-03-01",
+      scale_x_date(breaks = as.Date(c("2011-03-01","2011-03-01",
+                                      "2012-03-01","2012-03-01",
+                                      "2013-03-01","2013-03-01",
+                                      "2014-03-01","2014-03-01",
+                                      "2015-03-01","2015-03-01",
+                                      "2016-03-01","2016-03-01",
+                                      "2017-03-01","2017-03-01",
+                                      "2018-03-01","2018-03-01",
                                       "2019-03-01"))) +
       labs(x = "Date", y = "Number Birds Observed") +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+#      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       theme_classic()
   })
   
