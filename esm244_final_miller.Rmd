@@ -203,6 +203,9 @@ wrack_mean_sector <- wrack_beach %>%
 
 ```
 
+
+
+
 ###Tab 1 Graph
 ```{r, fig.width=30}
 
@@ -355,6 +358,25 @@ shore_gull_plot
 # bar graph overlayed by line plt. bar plot is mean wrack.
 # line plot is bird. if select all 3, then separate by color.
 
+
+```
+
+
+```{r}
+# in this new code snippet I anm going to join wrack_shore_gull and wrack_mean_sector by date and beach_section_initials.
+
+# first, get dates the same in both data frames
+wrack_mean_sector$survey_week <- mdy(wrack_mean_sector$survey_week)
+
+
+wrack_avian_join <- full_join(wrack_shore_gull, wrack_mean_sector, by = c("survey_week", "beach_section_initials")) 
+
+wrack_avian_df <- wrack_avian_join %>% 
+  dplyr::select(survey_week, beach_section_initials, sp_2, total, mean) %>% 
+  rename(species_2 = sp_2, mean_wrack = mean) %>% 
+  filter(mean_wrack != "NA") # removed rows where wrack = NA, meaning no wrack data were collected
+
+write_csv(wrack_avian_df, "wrack_avian_df.csv") 
 
 ```
 
