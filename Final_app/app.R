@@ -2,6 +2,7 @@
 library(tidyverse)
 library(shiny)
 library(shinythemes)
+library(lubridate)
 
 
 ############################################
@@ -9,6 +10,7 @@ library(shinythemes)
 
 birds_by_region <- read_csv("birds_by_region.csv")
 
+birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
 #############################################
 
@@ -63,16 +65,16 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                     # Sidebar with a slider input for number of bins 
                     sidebarLayout(
                       sidebarPanel(
-                        dateRangeInput("survey_week", 
+                        dateRangeInput("survey_week_1", 
                                     label = "Choose date range:",
                                     start = "2011-03-01", end = "2019-02-28",
                                     min = "2011-03-01", max ="2019-02-28"),
                         
-                        radioButtons("species_type", 
+                        radioButtons("species_type_1", 
                                      label = "Select species type:",
                                      choices = list("Shorebird", "Gull", "Tern")),
                        
-                         radioButtons("beach", 
+                         radioButtons("beach_1", 
                                      label = "Select beach region:", 
                                      choices = list("North","Purisima","South"))
                         
@@ -101,19 +103,19 @@ server <- function(input, output) {
 date_range <- reactive(
   {
     birds_by_region %>% 
-    filter(survey_week >= input$date_range[1], survey_week <= input$date_range[2]) %>% 
-    filter(beach == input$beach[]) %>% 
-    filter(species_type == input$species_type[])
+    filter(survey_week >= input$survey_week_1[1], survey_week <= input$survey_week_1[2]) %>% 
+    filter(beach == input$beach_1) %>% 
+    filter(species_type == input$species_type_1)
     }
   )
   
      output$beach_species_plot <- renderPlot({
 
      ggplot(date_range(),
-         aes(x = input$survey_week, 
+         aes(x = survey_week, 
          y = total, 
-         color = input$species_type, 
-         shape = input$beach)) +
+         color = species_type, 
+         shape = beach)) +
         geom_point() +
         geom_line() +
         labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") 
