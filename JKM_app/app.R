@@ -1,21 +1,39 @@
-
-
+library(tidyverse)
 library(shiny)
 library(shinythemes)
+library(lubridate)
 
 
+############################################
+# Load app data 
+
+#Load dataset for tab 2 (time and species count data)
+birds_by_region <- read_csv("birds_by_region.csv")
+
+birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
+
+
+#Load dataset for tab 3 (species abundance and study map)
+
+
+
+#Load dataset for tab 4
+
+wrack_shore_gull <- read_csv("wrack_shore_gull.csv")
+
+
+
+#############################################
 
 #### User Interface: Define UI for application 
 
-ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti. # JKM likes superhero and darkly.
-                
+ui <- fluidPage(theme=shinytheme("superhero"), 
                 
                 # Title Panel
                 titlePanel("Taking Flight: A Look into the Birds of Vandenberg Air Force Base"), #main app title
                 
                 navbarPage("Learn more about coastal bird population dynamics at VAFB in Central California.", #navigation bar title
-                           # depending on the monitor, the tabs are either to the side of 'Click the tabs...' or below. any preference? Just delete word 'below'? How about 'Learn more about birds at Vandenberg Air Force Base in Central California'
-                           # original 'Click the tabs below to learn more about birds at Vandenberg Air Force Base in Lompoc, California'
+                           
                            
                            # First Tab Panel = Introduction/Summary
                            
@@ -23,21 +41,21 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                     
                                     # Photo of banded snowy plover in side bar panel. If this photo can't be resized small enough and look good let's use the drawing. It's very nice.
                                     # The photo size is formatted so it looks good on my browser/screen. It might be best to use my laptop for the presentation so there are no formatting surprises because the monitor makes a difference.
-                                    sidebarPanel(img(src='snpl_small_2.jpg', align = "left")),
+                                    sidebarPanel(img(src='SNPL_small.jpg', align = "left")),
                                     
                                     # Main panel with info. I want this shown to the right of the photo in the sidebarPanel.
                                     mainPanel(              
                                       h1("App Summary"), #subtitle
                                       p("This dataset was collected for Vandenberg Air Force Base (VAFB) by Point Blue Conservation Science, a nonprofit based in central California, as part of ongoing beach ecosystem and snowy plover conservation projects. Our app will explore seasonal and annual fluctuations in shorebird and gull abundance, and changes in beach habitat at VAFB."),
                                       h1("Data"), #subtitle
-                                      p("Since March 2011, weekly transect surveys were conducted at VAFB beaches. North and South VAFB beaches were separated by distinct beach sectors. Each beach sector was divided into “transect blocks” approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
+                                      p("Since March 2011, weekly transect surveys were conducted at VAFB beaches. North and South VAFB beaches were separated by distinct beach sectors. Each beach sector was divided into transect blocks approximately 100-300 meters in length along the coastal strand. Within each transect block, counts were taken of the number of snowy plovers, age, sex, flock size, presence of paired individuals, and presence of broods. Additionally, the number and species of shorebirds, seabird, or raptors utilizing the habitat was recorded, and the amount of wrack present on each block was scored (Robinette et al. 2017)"),
                                       p("Thousands of data points from bird count transects have been collected by field biologists since 2011. Bird counts have been aggregated and reported at the end of each transect and/or field survey. Data from weekly and semi-weekly surveys include: survey date and location, bird type (shorebird or gull), bird species, species/category abundance (recorded as number of observed birds, and wrack index (defined as the abundance of fresh surf-cast kelp on the beach, where a rating of 1 would be the least amount of wrack, and 5 is the highest amount of wrack)."), 
                                       h1("Authors"), 
                                       p("This app was created in Shiny by Jamie Miler and Kristan Culbert for ESM 244 (Advanced Data Analysis) - Winter 2019. Photo by Ross Griswold."))),
                            
                            # Second Tab Panel = Time and Species Count Data
                            
-                           #Widget 1: Input: Time by year (2012 - 2018)
+                           #Widget 1: Input: Time by year (2011 - 2018)
                            #Type: Slider, which will allow app users to examine progression of data on a temporal scale. 
                            
                            #Widget 2
@@ -56,22 +74,26 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                     # Sidebar with a slider input for number of bins 
                                     sidebarLayout(
                                       sidebarPanel(
-                                        dateRangeInput("survey_week", 
-                                                       label = "Choose date range:"),
+                                        dateRangeInput("survey_week_1", 
+                                                       label = "Choose date range:",
+                                                       start = "2011-03-01", end = "2019-02-28",
+                                                       min = "2011-03-01", max ="2019-02-28"),
                                         
-                                        radioButtons("species_type", 
-                                                     label = "Select species type:",
-                                                     choices = list("Shorebird", "Gull", "All")),
+                                        selectInput("species_type_1", 
+                                                    label = "Select species type:",
+                                                    choices = list("Shorebird" = "Shorebird", "Gull" = "Gull", "Tern" = "Tern")),
                                         
-                                        radioButtons("beach", 
+                                        radioButtons("beach_1", 
                                                      label = "Select beach region:", 
-                                                     choices = list("North","Purisima","South"))
+                                                     choices = list("North" = "NORTH","Purisima" = "PURISIMA","South" = "SOUTH"))
                                         
                                       ),
                                       
+                                      
                                       # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
                                       mainPanel(
-                                        plotOutput("beach_species_plot") #placeholder for a plot named "beach_species_plot" - reference this for output
+                                        plotOutput("beach_species_plot")
+                                     #placeholder for a plot named "beach_species_plot" - reference this for output
                                       )
                                     )),
                            
@@ -167,20 +189,51 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
 
 server <- function(input, output) {
   
+  
   ##Generate Tab 2 Outputs: Generate a line graph using year range input data, species, count data to create a line graph. 
+  
+  # specifies date range for survey_date
+  
+  date_range <- reactive(
+    {
+      birds_by_region %>% 
+        filter(survey_week >= input$survey_week_1[1], survey_week <= input$survey_week_1[2]) %>% 
+        filter(beach == input$beach_1[1] | beach == input$beach_1[2] | beach == input$beach_1[3]) %>%
+        filter(species_type == input$species_type_1[1] | species_type == input$species_type_1[2] | species_type == input$species_type_1[3]) #%>%
+      #      mutate(survey_week = mdy(survey_week)) %>% 
+      #      mutate(total = as.numeric(total))
+      #      mutate(beach = as.factor(beach)) %>%
+      #     mutate(species_type = as.factor(species_type))
+    }
+  )
   
   output$beach_species_plot <- renderPlot({
     
-    # definte inputs for plot from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    # draw line graph with inputs from species, count, and year range
-    beach_species_plot <- beach_species_plot <- ggplot(birds_by_region) +
-      geom_point(aes(x = survey_week, y = total)) +
-      geom_line(aes(x = survey_week, y = total)) +
-      labs(x = "Date", y = "Number Birds Observed", title = "VAFB Birds") +
-      facet_wrap(~species_type, scale = "free")
+    ggplot(date_range(), 
+           aes(x = survey_week, y = total)) +
+      geom_col(aes(fill = species_type)) +
+      scale_y_continuous(expand = c(0,0)) +
+      #         scale_x_date(breaks = as.Date(c("2011-03-01","2011-05-01","2011-07-01","2011-09-01","2011-11-01","2012-01-01",
+      #                                  "2012-03-01","2012-05-01","2012-07-01","2012-09-01","2012-11-01","2013-01-01",
+      #                                 "2013-03-01","2013-05-01","2013-07-01","2013-09-01","2013-11-01","2014-01-01",
+      #                                "2014-03-01","2014-05-01","2014-07-01","2014-09-01","2014-11-01","2015-01-01",
+      #                               "2015-03-01","2015-05-01","2015-07-01","2015-09-01","2015-11-01","2016-01-01",
+      #                              "2016-03-01","2016-05-01","2016-07-01","2016-09-01","2016-11-01","2017-01-01",
+      #                             "2017-03-01","2017-05-01","2017-07-01","2017-09-01","2017-11-01","2018-01-01",
+      #                            "2018-03-01","2018-05-01","2018-07-01","2018-09-01","2018-11-01","2019-01-01",
+      #                           "2019-02-01"))) +
+      scale_x_date(breaks = as.Date(c("2011-03-01",
+                                      "2012-03-01",
+                                      "2013-03-01",
+                                      "2014-03-01",
+                                      "2015-03-01",
+                                      "2016-03-01",
+                                      "2017-03-01",
+                                      "2018-03-01",
+                                      "2019-03-01"))) +
+      labs(x = "Date", y = "Number Birds Observed") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      theme_classic()
   })
   
   ##Generate Tab 3 Outputs: Species Abundance and Study Map 
