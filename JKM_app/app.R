@@ -19,7 +19,8 @@ birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
 #Load dataset for tab 4
 
-wrack_shore_gull <- read_csv("wrack_shore_gull.csv")
+wrack_avian <- read_csv("wrack_avian_tab3.csv")
+wrack_avian$survey_week <- mdy(wrack_avian$survey_week)
 
 
 
@@ -92,8 +93,7 @@ ui <- fluidPage(theme=shinytheme("superhero"),
                                       
                                       # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
                                       mainPanel(
-                                        plotOutput("beach_species_plot")
-                                     #placeholder for a plot named "beach_species_plot" - reference this for output
+                                        plotOutput("beach_species_plot") #placeholder for a plot named "beach_species_plot" - reference this for output
                                       )
                                     )),
                            
@@ -115,11 +115,14 @@ ui <- fluidPage(theme=shinytheme("superhero"),
                            
                            tabPanel("Species Abundance by Location",
                                     h1("Species Abundance and Study Map"),
+                                    
                                     # Sidebar with a slider input for number of bins 
                                     sidebarLayout(
                                       sidebarPanel(
-                                        dateRangeInput("point_size", 
-                                                       label = "Choose year range:"),
+                                        dateRangeInput("survey_week", 
+                                                       label = "Choose year range:", 
+                                                       start = "2012-03-12", end = "2019-02-28",
+                                                       min = "2011-03-01", max ="2019-02-28"),
                                         
                                         radioButtons("species_type", 
                                                      label = "Select species type:",
@@ -133,7 +136,7 @@ ui <- fluidPage(theme=shinytheme("superhero"),
                                       
                                       # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
                                       mainPanel(
-                                        plotOutput("distPlot") #create df for plot
+                                        plotOutput("mapPlot") #create df for plot
                                       )
                                     )),
                            
@@ -237,12 +240,13 @@ server <- function(input, output) {
   })
   
   ##Generate Tab 3 Outputs: Species Abundance and Study Map 
+  
+  
+  
+  
   output$map <- renderPlot({
     
-    # definte inputs for plot from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
+   
     # draw map using inputs 
     map <- ggplot(sb_crop2) +
       geom_sf(aes(fill = STATE),
@@ -259,16 +263,49 @@ server <- function(input, output) {
   })
   
   ##Generate Tab 4 Outputs: Time and Wrack Data, SNPL/SAND/gull graphs
-  output$shore_gull_plot <- renderPlot({
+ 
+   # specifies date range for survey_date
+  
+  date_range <- reactive(
+    {
+      birds_by_region %>% 
+        filter(survey_week >= input$survey_week_1[1], survey_week <= input$survey_week_1[2]) %>% 
+        filter(beach == input$beach_1[1] | beach == input$beach_1[2] | beach == input$beach_1[3]) %>%
+        filter(species_type == input$species_type_1[1] | species_type == input$species_type_1[2] | species_type == input$species_type_1[3]) #%>%
+      #      mutate(survey_week = mdy(survey_week)) %>% 
+      #      mutate(total = as.numeric(total))
+      #      mutate(beach = as.factor(beach)) %>%
+      #     mutate(species_type = as.factor(species_type))
+    }
+  )
+  
+  output$beach_species_plot <- renderPlot({
     
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    # draw the histogram with the specified number of bins
-    shore_gull_plot <- ggplot(wrack_shore_gull, aes(x = survey_week, y = total)) +  
-      geom_line(aes(color = sp_2)) 
-    shore_gull_plot
+    ggplot(date_range(), 
+           aes(x = survey_week, y = total)) +
+      geom_col(aes(fill = species_type)) +
+      scale_y_continuous(expand = c(0,0)) +
+      #         scale_x_date(breaks = as.Date(c("2011-03-01","2011-05-01","2011-07-01","2011-09-01","2011-11-01","2012-01-01",
+      #                                  "2012-03-01","2012-05-01","2012-07-01","2012-09-01","2012-11-01","2013-01-01",
+      #                                 "2013-03-01","2013-05-01","2013-07-01","2013-09-01","2013-11-01","2014-01-01",
+      #                                "2014-03-01","2014-05-01","2014-07-01","2014-09-01","2014-11-01","2015-01-01",
+      #                               "2015-03-01","2015-05-01","2015-07-01","2015-09-01","2015-11-01","2016-01-01",
+      #                              "2016-03-01","2016-05-01","2016-07-01","2016-09-01","2016-11-01","2017-01-01",
+      #                             "2017-03-01","2017-05-01","2017-07-01","2017-09-01","2017-11-01","2018-01-01",
+      #                            "2018-03-01","2018-05-01","2018-07-01","2018-09-01","2018-11-01","2019-01-01",
+      #                           "2019-02-01"))) +
+      scale_x_date(breaks = as.Date(c("2011-03-01",
+                                      "2012-03-01",
+                                      "2013-03-01",
+                                      "2014-03-01",
+                                      "2015-03-01",
+                                      "2016-03-01",
+                                      "2017-03-01",
+                                      "2018-03-01",
+                                      "2019-03-01"))) +
+      labs(x = "Date", y = "Number Birds Observed") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      theme_classic()
   })
   
   
