@@ -65,20 +65,20 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                     sidebarLayout(
                                       sidebarPanel(
                                         dateRangeInput("survey_week_1", 
-                                                       label = "Choose date range:",
+                                                       label = "Choose Date Range:",
                                                        start = "2011-03-01", 
                                                        end = "2019-03-01",
                                                        min = "2011-03-01", 
                                                        max ="2019-03-01"),
                                         
                                         selectInput("species_type_1", 
-                                                    label = "Select species type:",
+                                                    label = "Select Avian Family:",
                                                     choices = list("Shorebird" = "Shorebird", 
                                                                    "Gull" = "Gull", 
                                                                    "Tern" = "Tern")),
                                         
                                         radioButtons("beach_1", 
-                                                     label = "Select beach region:", 
+                                                     label = "Select Beach Region:", 
                                                      choices = list("North" = "NORTH",
                                                                     "Purisima" = "PURISIMA",
                                                                     "South" = "SOUTH"))
@@ -123,25 +123,27 @@ server <- function(input, output) {
     ggplot(date_range(), 
            aes(x = survey_week, y = total)) +
       geom_col(aes(fill = species_type), show.legend = FALSE) +
+      scale_fill_manual(limits = c("Shorebird", "Gull", "Tern"), 
+                        values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
       scale_y_continuous(expand = c(0,0)) +
-      #         scale_x_date(breaks = as.Date(c("2011-03-01","2011-05-01","2011-07-01","2011-09-01","2011-11-01","2012-01-01",
-      #                                  "2012-03-01","2012-05-01","2012-07-01","2012-09-01","2012-11-01","2013-01-01",
-      #                                 "2013-03-01","2013-05-01","2013-07-01","2013-09-01","2013-11-01","2014-01-01",
-      #                                "2014-03-01","2014-05-01","2014-07-01","2014-09-01","2014-11-01","2015-01-01",
-      #                               "2015-03-01","2015-05-01","2015-07-01","2015-09-01","2015-11-01","2016-01-01",
-      #                              "2016-03-01","2016-05-01","2016-07-01","2016-09-01","2016-11-01","2017-01-01",
-      #                             "2017-03-01","2017-05-01","2017-07-01","2017-09-01","2017-11-01","2018-01-01",
-      #                            "2018-03-01","2018-05-01","2018-07-01","2018-09-01","2018-11-01","2019-01-01",
-      #                           "2019-02-01"))) +
-      scale_x_date(breaks = as.Date(c("2011-03-01","2011-03-01",
-                                      "2012-03-01","2012-03-01",
-                                      "2013-03-01","2013-03-01",
-                                      "2014-03-01","2014-03-01",
-                                      "2015-03-01","2015-03-01",
-                                      "2016-03-01","2016-03-01",
-                                      "2017-03-01","2017-03-01",
-                                      "2018-03-01","2018-03-01",
-                                      "2019-03-01"))) +
+      scale_x_date(breaks = as.Date(c("2011-03-01","2011-09-01",
+                                      "2012-03-01","2012-09-01",
+                                      "2013-03-01","2013-09-01",
+                                      "2014-03-01","2014-09-01",
+                                      "2015-03-01","2015-09-01",
+                                      "2016-03-01","2016-09-01",
+                                      "2017-03-01","2017-09-01",
+                                      "2018-03-01","2018-09-01",
+                                      "2019-03-01")), 
+                   labels = c("03/2011","09/2011",
+                              "03/2012","09/2012",
+                              "03/2013","09/2013",
+                              "03/2014","09/2014",
+                              "03/2015","09/2015",
+                              "03/2016","09/2016",
+                              "03/2017","09/2017",
+                              "03/2018","09/2018",
+                              "03/2019")) +
       labs(x = "Date", y = "Number Birds Observed") +
 #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       theme_classic()
