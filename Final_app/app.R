@@ -9,16 +9,16 @@ library(lubridate)
 
 birds_by_region <- read_csv("birds_by_region.csv")
 
-birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
+#birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
 wrack_avian_tab3 <- read_csv("wrack_avian_tab3.csv")
 
-wrack_avian_tab3$survey_week <- mdy(wrack_avian_tab3$survey_week)
+#wrack_avian_tab3$survey_week <- mdy(wrack_avian_tab3$survey_week)
 
 wrack_mean <- read_csv("wrack_mean.csv") %>% 
   filter(mean != "NA")
 
-wrack_mean$survey_week <- mdy(wrack_mean$survey_week)
+#wrack_mean$survey_week <- mdy(wrack_mean$survey_week)
 
 #############################################
 
@@ -80,7 +80,8 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                                     label = "Select Avian Family:",
                                                     choices = list("Shorebird" = "Shorebird", 
                                                                    "Gull" = "Gull", 
-                                                                   "Tern" = "Tern")),
+                                                                   "Tern" = "Tern",
+                                                                   "Raptor" = "Raptor")),
                                         
                                         radioButtons("beach_1", 
                                                      label = "Select Beach Region:", 
@@ -176,7 +177,8 @@ server <- function(input, output) {
                  beach == input$beach_1[3]) %>%
         filter(species_type == input$species_type_1[1] | 
                  species_type == input$species_type_1[2] | 
-                 species_type == input$species_type_1[3]) #%>%
+                 species_type == input$species_type_1[3] |
+                 species_type == input$species_type_1[4]) #%>%
       #      mutate(survey_week = mdy(survey_week)) %>% 
       #      mutate(total = as.numeric(total))
       #      mutate(beach = as.factor(beach)) %>%
@@ -189,8 +191,8 @@ server <- function(input, output) {
     ggplot(date_range(), 
            aes(x = survey_week, y = total)) +
       geom_col(aes(fill = species_type), show.legend = FALSE) +
-      scale_fill_manual(limits = c("Shorebird", "Gull", "Tern"), 
-                        values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
+      scale_fill_manual(limits = c("Shorebird","Gull","Tern","Raptor"), 
+                        values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2","darkred")) +
       scale_y_continuous(expand = c(0,0)) +
       scale_x_date(breaks = as.Date(c("2011-03-01","2011-09-01",
                                       "2012-03-01","2012-09-01",

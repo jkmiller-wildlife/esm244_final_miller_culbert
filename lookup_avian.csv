@@ -1,35 +1,35 @@
 Actual Species,SpeciesName,SpeciesType,analyze
 CORA,common raven,Corvid,0
-BOGU,Bonaparte's gull,Gull,0
+BOGU,Bonaparte's gull,Gull,1
 CAGU,California gull,Gull,1
-GLGU,glaucous gull,Gull,0
-gull,unidentified gull,Gull,0
-GWGU,glaucous-winged gull,Gull,0
+GLGU,glaucous gull,Gull,1
+gull,unidentified gull,Gull,1
+GWGU,glaucous-winged gull,Gull,1
 HEEG,heerman's gull,Gull,1
-HERG,herring gull,Gull,0
-MEGU,mew gull,Gull,0
-RBGU,ring-billed gull,Gull,0
+HERG,herring gull,Gull,1
+MEGU,mew gull,Gull,1
+RBGU,ring-billed gull,Gull,1
 WEGU,western gull,Gull,1
 AMPI,American pipit,Passerine,0
 BRBL,brewer's blackbird,Passerine,0
 LOSH,loggerhead shrike,Passerine,0
-AMKE,American kestrel,Raptor,0
-BNOW,barn owl,Raptor,0
-BUOW,burrowing owl,Raptor,0
-COHA,Cooper's hawk,Raptor,0
-falcon,unidentified falcon,Raptor,0
-FEHA,Ferruginous Hawk,Raptor,0
-GHOW,great horned owl,Raptor,0
-GOEA,golden eagle,Raptor,0
-MERL,merlin,Raptor,0
-NOHA,northern harrier,Raptor,0
-OSPR,osprey,Raptor,0
-owl,unidentified owl,Raptor,0
-PEFA,peregrine falcon,Raptor,0
-raptor,unidentified raptor,Raptor,0
-RTHA,red-tailed hawk,Raptor,0
-TUVU,turkey vulture,Raptor,0
-WTKI,white-tailed kite,Raptor,0
+AMKE,American kestrel,Raptor,1
+BNOW,barn owl,Raptor,1
+BUOW,burrowing owl,Raptor,1
+COHA,Cooper's hawk,Raptor,1
+falcon,unidentified falcon,Raptor,1
+FEHA,Ferruginous Hawk,Raptor,1
+GHOW,great horned owl,Raptor,1
+GOEA,golden eagle,Raptor,1
+MERL,merlin,Raptor,1
+NOHA,northern harrier,Raptor,1
+OSPR,osprey,Raptor,1
+owl,unidentified owl,Raptor,1
+PEFA,peregrine falcon,Raptor,1
+raptor,unidentified raptor,Raptor,1
+RTHA,red-tailed hawk,Raptor,1
+TUVU,turkey vulture,Raptor,1
+WTKI,white-tailed kite,Raptor,1
 BLSK,Black Skimmer,Seabird,0
 BRAC,Brandt's cormorant,Seabird,0
 BRPE,brown pelican,Seabird,0
@@ -41,46 +41,46 @@ PAJA,parasitic jaeger,Seabird,0
 PECO,pelagic cormorant,Seabird,0
 SUSC,surf scoter,Seabird,0
 WEGR,western grebe,Seabird,0
-AMAV,American avocet,Shorebird,0
-AMGP,American golden-plover,Shorebird,0
-BASA,Baird's sandpiper,Shorebird,0
+AMAV,American avocet,Shorebird,1
+AMGP,American golden-plover,Shorebird,1
+BASA,Baird's sandpiper,Shorebird,1
 BBPL,black-bellied plover,Shorebird,1
-BBSA,buff-breasted sandpiper,Shorebird,0
-BLOY,Black Oystercatcher,Shorebird,0
-BLTU,black turnstone,Shorebird,0
-BNST,black-necked stilt,Shorebird,0
-DOWI,unidentified dowitcher,Shorebird,0
+BBSA,buff-breasted sandpiper,Shorebird,1
+BLOY,Black Oystercatcher,Shorebird,1
+BLTU,black turnstone,Shorebird,1
+BNST,black-necked stilt,Shorebird,1
+DOWI,unidentified dowitcher,Shorebird,1
 DUNL,dunlin,Shorebird,1
-GRYE,greater yellowlegs,Shorebird,0
-KILL,killdeer,Shorebird,0
+GRYE,greater yellowlegs,Shorebird,1
+KILL,killdeer,Shorebird,1
 LBCU,long-billed curlew,Shorebird,1
 LESA,least sandpiper,Shorebird,1
 MAGO,marbled godwit,Shorebird,1
-peeps,unidentified peeps,Shorebird,0
-PESA,pectoral sandpiper,Shorebird,0
-phalarope,unidentified phalarope,Shorebird,0
-REKN,red knot,Shorebird,0
-RNPH,red-necked phalarope,Shorebird,0
-RUTU,ruddy turnstone,Shorebird,0
+peeps,unidentified peeps,Shorebird,1
+PESA,pectoral sandpiper,Shorebird,1
+phalarope,unidentified phalarope,Shorebird,1
+REKN,red knot,Shorebird,1
+RNPH,red-necked phalarope,Shorebird,1
+RUTU,ruddy turnstone,Shorebird,1
 SAND,sanderling,Shorebird,1
 SEPL,semipalmated plover,Shorebird,1
 SNPL,Snowy Plover,Shorebird,1
-SPSA,spotted sandpiper,Shorebird,0
+SPSA,spotted sandpiper,Shorebird,1
 SURF,surfbird,Shorebird,1
-WATA,Wandering Tattler,Shorebird,0
+WATA,Wandering Tattler,Shorebird,1
 WESA,western sandpiper,Shorebird,1
 WHIM,whimbrel,Shorebird,1
 WILL,willet,Shorebird,1
-WIPH,Wilson's phalarope,Shorebird,0
-WISN,Wilson's snipe,Shorebird,0
-YELL,unidentified yellowlegs,Shorebird,0
+WIPH,Wilson's phalarope,Shorebird,1
+WISN,Wilson's snipe,Shorebird,1
+YELL,unidentified yellowlegs,Shorebird,1
 CATE,Caspian tern,Tern,1
-COTE,common tern,Tern,0
+COTE,common tern,Tern,1
 ELTE,elegant tern,Tern,1
-FOTE,Forster's tern,Tern,0
+FOTE,Forster's tern,Tern,1
 LETE,least tern,Tern,1
 ROTE,royal tern,Tern,1
-tern,unidentified tern,Tern,0
+tern,unidentified tern,Tern,1
 GBHE,great blue heron,Wader,0
 GREG,great egret,Wader,0
 REEG,reddish egret,Wader,0
