@@ -175,14 +175,15 @@ write_csv(wrack_mean_sector, "wrack_mean.csv")
 ```{r}
 
 wrack_shore_gull <- birds_by_sector %>% 
-  filter(species == "SNPL" | species == "SAND" | species_type == "Gull") %>% 
   mutate(sp_2 = case_when(
     species == "SNPL" ~ "SNPL",
     species == "SAND" ~ "SAND",
     species == "CAGU" ~ "Gull",
     species == "WEGU" ~ "Gull",
-    species == "HEEG" ~ "Gull"
-  ))
+    species == "HEEG" ~ "Gull",
+    species == "gull" ~ "Gull")) %>%
+  filter(species == "SNPL" | species == "SAND" | species_type == "Gull")
+  
 
 # below I am going to join wrack_shore_gull and wrack_mean_sector by date and beach_section_initials.
 
@@ -229,11 +230,11 @@ write_csv(avian_block_map, "avian_block_map.csv")
 ```{r}
 
 # Simplfy lookup_blocks so only transect block, and UTM are shown. Need to convert UTM to lat/long
-block_gps <- lookup_blocks %>% 
-  dplyr::select(transect_block, x_proj, y_proj) %>% 
-  filter(x_proj != "NA")
+#block_gps <- lookup_blocks %>% 
+#  dplyr::select(transect_block, x_proj, y_proj) %>% 
+#  filter(x_proj != "NA")
 
-rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
+#rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
 
 
 #Transform UTM to lat/long
@@ -255,6 +256,18 @@ rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that'
 
 #avian_block_gps <- full_join()
 
+
+```
+
+#Regression test
+```{r}
+
+wrack_avian_df$species_2 <- fct_relevel(wrack_avian_df$species_2, "SAND")
+
+wrack_avian_lm <- lm(total ~ mean_wrack + species_2, data = wrack_avian_df)
+wrack_avian_lm
+
+summary(wrack_avian_lm)
 
 ```
 

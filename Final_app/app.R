@@ -153,7 +153,42 @@ tabPanel("Habitat Change Over Time",
              plotOutput("wrack_plot"),
              plotOutput("wrack_avian_plot")
            )
-         ))))
+         )),
+
+
+# Regression Analysis
+
+tabPanel("Regression Analysis",
+         h1("Wrack Regression Analysis"),
+         sidebarLayout(
+           sidebarPanel(
+
+             radioButtons("species_type_4", 
+                          label = "Select Species:",
+                          choices = list("Snowy Plover" = "SNPL", 
+                                         "Sanderling" = "SAND",
+                                         "Gulls" = "Gull")),
+             
+             selectInput("beach_4", 
+                         label = "Select Beach Section:", 
+                         choices = list("Minuteman (MIN)" = "MIN",
+                                        "Shuman North (SHN)" = "SHN",
+                                        "Shuman South (SHS)" = "SHS",
+                                        "San Antonio (SAN)" = "SAN",
+                                        "Purisima North (PNO)" = "PNO",
+                                        "Wall Beach (WAL)" = "WAL",
+                                        "Surf North (SNO)" = "SNO",
+                                        "Surf South (SSO)" = "SSO"))
+           ),
+           
+           
+           # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
+           mainPanel(
+             "Model Results", verbatimTextOutput("regression")
+           )
+         ))
+
+))
 
 
 
@@ -316,7 +351,35 @@ server <- function(input, output) {
         #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme_classic()
     })
-  
+
+ #######################################   
+    # Regression output
+    
+    wrack_avian_model <- reactive(
+      {
+        wrack_avian_tab3 %>% 
+          filter(beach_section_initials == input$beach_4[1]
+                 | beach_section_initials == input$beach_4[2]
+                 | beach_section_initials == input$beach_4[3]
+                 | beach_section_initials == input$beach_4[4]
+                 | beach_section_initials == input$beach_4[5]
+                 | beach_section_initials == input$beach_4[6]
+                 | beach_section_initials == input$beach_4[7]
+                 | beach_section_initials == input$beach_4[8]) %>%
+          filter(species_2 == input$species_type_4[1] | 
+                   species_2 == input$species_type_4[2] | 
+                   species_2 == input$species_type_4[3])
+      }
+    )
+    
+    
+    output$summary <- renderPrint({
+      fit <- lm(wrack_avian_model[,input$species_type_4] ~ wrack_avian_model[,input$beach_4])
+      names(fit$coefficients) <- c("Intercept", input$total)
+      summary(fit)
+    
+    })
+      
   
 }
 
