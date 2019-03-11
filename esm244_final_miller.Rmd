@@ -368,6 +368,7 @@ shore_gull_plot
 # first, get dates the same in both data frames
 wrack_mean_sector$survey_week <- mdy(wrack_mean_sector$survey_week)
 
+write_csv(wrack_mean_sector, "wrack_mean.csv")
 
 wrack_avian_join <- full_join(wrack_shore_gull, wrack_mean_sector, by = c("survey_week", "beach_section_initials")) 
 

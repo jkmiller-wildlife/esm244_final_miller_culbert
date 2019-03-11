@@ -15,6 +15,11 @@ wrack_avian_tab3 <- read_csv("wrack_avian_tab3.csv")
 
 wrack_avian_tab3$survey_week <- mdy(wrack_avian_tab3$survey_week)
 
+wrack_mean <- read_csv("wrack_mean.csv") %>% 
+  filter(mean != "NA")
+
+wrack_mean$survey_week <- mdy(wrack_mean$survey_week)
+
 #############################################
 
 #### User Interface: Define UI for application 
@@ -114,18 +119,21 @@ tabPanel("Habitat Change Over Time",
          # Sidebar with a slider input for number of bins 
          sidebarLayout(
            sidebarPanel(
- #            dateRangeInput("survey_week_3", 
+ #            dateRangeInput("survey_week_3",        
   #                          label = "Choose Date Range:",
    #                         start = "2011-03-01", 
     #                        end = "2019-03-01",
      #                       min = "2011-03-01", 
       #                      max ="2019-03-01"),
-              radioButtons("species_type_3", 
+       # I don't think we need date as a selector for this one. Already a lot going on with the differnt beach sections.
+
+                          radioButtons("species_type_3", 
                           label = "Select Species:",
                           choices = list("Snowy Plover" = "SNPL", 
                                          "Sanderling" = "SAND",
                                          "Gulls" = "Gull")),
-             selectInput("beach_3", 
+
+                         selectInput("beach_3", 
                          label = "Select Beach Section:", 
                          choices = list("Minuteman" = "MIN",
                                         "Shuman North" = "SHN",
@@ -138,8 +146,9 @@ tabPanel("Habitat Change Over Time",
              ),
            
            
-           # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
+           # Output: use radio buttons for site location, radio buttons for bird species to create a line plot
            mainPanel(
+             plotOutput("wrack_plot"),
              plotOutput("wrack_avian_plot")
            )
          ))))
@@ -210,10 +219,23 @@ server <- function(input, output) {
     
     # specifies date range for survey_date
     
-    wrack_avian <- reactive(
+    wrack_mean_2 <- reactive(
+      {
+        wrack_mean %>% 
+          filter(beach_section_initials == input$beach_3[1]
+                 | beach_section_initials == input$beach_3[2]
+                 | beach_section_initials == input$beach_3[3]
+                 | beach_section_initials == input$beach_3[4]
+                 | beach_section_initials == input$beach_3[5]
+                 | beach_section_initials == input$beach_3[6]
+                 | beach_section_initials == input$beach_3[7]
+                 | beach_section_initials == input$beach_3[8])
+      }
+    )
+
+      wrack_avian <- reactive(
       {
         wrack_avian_tab3 %>% 
- #         filter(survey_week >= input$survey_week_3[1], survey_week <= input$survey_week_3[2]) %>% 
           filter(beach_section_initials == input$beach_3[1]
                  | beach_section_initials == input$beach_3[2]
                  | beach_section_initials == input$beach_3[3]
@@ -227,18 +249,20 @@ server <- function(input, output) {
                    species_2 == input$species_type_3[3])
       }
     )
-    
-    output$wrack_avian_plot <- renderPlot({
+
+
+
+    # need to change the wrack data frame
+    output$wrack_plot <- renderPlot({
       
-      ggplot(wrack_avian(), 
-             aes(x = survey_week, y = total)) +
-        geom_col(aes(color = mean_wrack)) +
+      ggplot(wrack_mean_2(),
+             aes(x = survey_week, y = mean)) +
+        geom_point() +
  #       geom_line(aes(color = mean_wrack)) +
 #        scale_fill_manual(limits = c("Snowy Plover", "Sanderling", "Gulls"), 
  #                         values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
         scale_y_continuous(expand = c(0,0)) +
-        scale_x_date(breaks = as.Date(c("2011-03-01","2011-09-01",
-                                        "2012-03-01","2012-09-01",
+        scale_x_date(breaks = as.Date(c("2012-03-01","2012-09-01",
                                         "2013-03-01","2013-09-01",
                                         "2014-03-01","2014-09-01",
                                         "2015-03-01","2015-09-01",
@@ -246,8 +270,38 @@ server <- function(input, output) {
                                         "2017-03-01","2017-09-01",
                                         "2018-03-01","2018-09-01",
                                         "2019-03-01")), 
-                     labels = c("03/2011","09/2011",
-                                "03/2012","09/2012",
+                     labels = c("03/2012","09/2012",
+                                "03/2013","09/2013",
+                                "03/2014","09/2014",
+                                "03/2015","09/2015",
+                                "03/2016","09/2016",
+                                "03/2017","09/2017",
+                                "03/2018","09/2018",
+                                "03/2019")) +
+        labs(x = " ", y = "Mean Wrack Score") +
+        #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        theme_classic()
+    })
+  
+  
+    output$wrack_avian_plot <- renderPlot({
+      
+      ggplot(wrack_avian(), 
+             aes(x = survey_week, y = total)) +
+        geom_col() +
+ #       geom_line(aes(color = mean_wrack)) +
+#        scale_fill_manual(limits = c("Snowy Plover", "Sanderling", "Gulls"), 
+ #                         values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
+        scale_y_continuous(expand = c(0,0)) +
+        scale_x_date(breaks = as.Date(c("2012-03-01","2012-09-01",
+                                        "2013-03-01","2013-09-01",
+                                        "2014-03-01","2014-09-01",
+                                        "2015-03-01","2015-09-01",
+                                        "2016-03-01","2016-09-01",
+                                        "2017-03-01","2017-09-01",
+                                        "2018-03-01","2018-09-01",
+                                        "2019-03-01")), 
+                     labels = c("03/2012","09/2012",
                                 "03/2013","09/2013",
                                 "03/2014","09/2014",
                                 "03/2015","09/2015",
