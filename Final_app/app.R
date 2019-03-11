@@ -84,9 +84,10 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                         
                                         radioButtons("beach_1", 
                                                      label = "Select Beach Region:", 
-                                                     choices = list("North" = "NORTH",
-                                                                    "Purisima" = "PURISIMA",
-                                                                    "South" = "SOUTH"))
+                                                     choices = list("North Beaches" = "NORTH",
+                                                                    "Purisima Beaches" = "PURISIMA",
+                                                                    "South Beaches" = "SOUTH")),
+                         img(src='VAFB_small.jpg', align = "left")
                                         
                                       ),
                                       
@@ -135,14 +136,15 @@ tabPanel("Habitat Change Over Time",
 
                          selectInput("beach_3", 
                          label = "Select Beach Section:", 
-                         choices = list("Minuteman" = "MIN",
-                                        "Shuman North" = "SHN",
-                                        "Shuman South" = "SHS",
-                                        "San Antonio" = "SAN",
-                                        "Purisima North" = "PNO",
-                                        "Wall Beach" = "WAL",
-                                        "Surf North" = "SNO",
-                                        "Surf South" = "SSO"))
+                         choices = list("Minuteman (MIN)" = "MIN",
+                                        "Shuman North (SHN)" = "SHN",
+                                        "Shuman South (SHS)" = "SHS",
+                                        "San Antonio (SAN)" = "SAN",
+                                        "Purisima North (PNO)" = "PNO",
+                                        "Wall Beach (WAL)" = "WAL",
+                                        "Surf North (SNO)" = "SNO",
+                                        "Surf South (SSO)" = "SSO")),
+                         img(src='VAFB_small.jpg', align = "left")
              ),
            
            
