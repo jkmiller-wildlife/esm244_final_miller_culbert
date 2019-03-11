@@ -1,0 +1,261 @@
+---
+title: "ESM 244 - Final Markdown"
+author: "Jamie Miller"
+date: "March 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+# load packages
+
+library(tidyverse)
+library(janitor) # to clean column names
+library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer. converts dates to dates rather than numerical sequences.
+#library(tseries) # for time series data
+
+#Mapping packages
+library(sf)
+library(leaflet)
+library(sp)
+
+```
+
+###Use this to read in data.
+```{r, include = FALSE}
+# Load all updated data. Let's try this again.
+
+transect <- read_csv("transect_updated.csv") %>% 
+  clean_names()
+# From this dataset we want Date, Transect block, total male, total female, unknown, and juvs. I added a totals column in excel to double check numbers. Associated math is in next code chunk.
+
+avian <- read_csv("avian_updated.csv")%>% 
+  clean_names() %>% 
+#  dplyr::select(survey_date, transect_block, species, count)
+  dplyr::select(survey_week, transect_block, species, count)
+# From this dataset we want date, Transect block, species, and count
+# modified data in excel so date is standardized to monday of survey week. this will separate out surveys that span 2 days.
+
+wrack_df <- read_csv("wrack_updated.csv")%>% 
+  clean_names()
+# wrack values, date, and transect block
+
+lookup_avian <- read_csv("lookup_avian.csv")%>% 
+  clean_names() %>% 
+  rename(species = actual_species) 
+# Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
+
+lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
+  clean_names() %>% 
+  filter(beach == "NORTH" | beach == "SOUTH" | beach == "PURISIMA")
+# transect block names, beach section initial code, region designation, and gps coords
+
+```
+
+###Wrangle SNPL population counts from transect data.
+```{r}
+# Tally SNPL count from transect data so it can be added to the avian data
+# SNPL data is collected be age/sex demographic Need to create totals and filter out all transect blocks that do not have any plovers in them.
+
+snpl <- transect %>%
+  dplyr::select(survey_week, transect_block, beach_section_initials, beach, males_individual, females_individual, unknown_individual, pairs, juvenile, total) %>% 
+  mutate(total_male = males_individual + pairs) %>% # combine M individ. w/ pairs to get total number of males
+  mutate(total_female = females_individual + pairs) %>% # combine F individ. w/ pairs to get total number of females
+  mutate(snpl = total_male + total_female + unknown_individual + juvenile) %>% # this should match column 'total'. Looks like it does
+  filter(snpl > 0) # filters out blocks where non SNPL were seen
+
+snpl_clean <- snpl %>%
+  dplyr::select(survey_week, transect_block, beach_section_initials, beach, snpl) %>% 
+  rename(count = snpl) %>% 
+  filter(beach == "NORTH" | beach == "PURISIMA" | beach == "SOUTH") 
+
+```
+
+###Wrangle avian data
+```{r}
+# Need to join avian data with lookup_avian for species name and type info, and lookup_blocks for beach section.
+
+# Join avian species info to avian count data
+avian_sp_join <- full_join(avian, lookup_avian, by = "species") #%>%  # yes, this worked.
+#  filter(analyze == 1)
+
+# Clean up transect blocks before joining. 
+blocks <- lookup_blocks %>% 
+  dplyr::select(transect_block, beach_section_initials, beach, y_proj, x_proj)
+
+# Join blocks to avian
+avian_block_join <- full_join(avian_sp_join, blocks, by = "transect_block")
+
+# Clean up columns and filter for only North, Purisima, and South beaches 
+avian_clean <- avian_block_join %>% 
+  dplyr::select(survey_week, transect_block, y_proj, x_proj, beach_section_initials, beach, species, species_name, species_type, count) %>% 
+  filter(beach == "NORTH" | beach == "PURISIMA" | beach == "SOUTH") %>% 
+  filter(species_type == "Gull" | species_type == "Raptor" | species_type == "Shorebird" | species_type == "Tern") %>% # filtered a subset of birds to analyze%>% 
+  filter(species != "NA")
+
+```
+
+###Combine avian and snpl data for a complete VAFB birds dataset
+```{r}
+# Merge test # 1
+# Merge snpl_clean with avian_clean into new df
+# then all SNPL entries will show NA in species, species_name, and species_type
+
+vafb_birds_combine <- bind_rows(avian_clean, snpl_clean) %>% # yay it worked!
+  filter(count > 0) 
+
+# The following three code snippets convert 'NA' values in the species, species_name, and species_type columns to 'SNPL', 'Snowy Plover', and 'Shorebird', repectively. Each column needed to be a character for it to work, according to Google.
+
+vafb_birds_combine$species <- as.character(vafb_birds_combine$species)
+vafb_birds_combine$species <- ifelse(is.na(vafb_birds_combine$species),'SNPL',vafb_birds_combine$species)
+
+vafb_birds_combine$species_name <- as.character(vafb_birds_combine$species_name)
+vafb_birds_combine$species_name <- ifelse(is.na(vafb_birds_combine$species_name),'Snowy Plover',vafb_birds_combine$species_name)
+
+vafb_birds_combine$species_type <- as.character(vafb_birds_combine$species_type)
+vafb_birds_combine$species_type <- ifelse(is.na(vafb_birds_combine$species_type),'Shorebird',vafb_birds_combine$species_type)
+
+# ok, so now we can use this data to make some graphs
+# will probably need to summarize at some point
+
+```
+
+###For the time series plots, group by beach section. Use these dataframes for making graphs!!!
+```{r}
+# Sum counts for each beach section. can then plot max birds per beach section over time. Keep transect block separations for map.
+
+
+birds_by_sector <- vafb_birds_combine %>% 
+  group_by(survey_week, beach_section_initials, beach, species, species_type) %>% 
+  summarize(total = sum(count))
+
+
+birds_by_region <- vafb_birds_combine %>% 
+  group_by(survey_week, beach, species_type) %>%  # remove species
+  summarize(total = sum(count))
+
+birds_by_region$survey_week <- mdy(birds_by_region$survey_week) #Use lubridate() functions to convert to times/dates
+
+write_csv(birds_by_region, "birds_by_region.csv")
+
+```
+
+###Wrangle the wrack data to make it useful
+```{r, include = FALSE}
+wrack_simple <- wrack_df %>% 
+  dplyr::select(survey_week, transect_block, wrack) %>%
+  filter(wrack != -9) 
+
+#wrack_simple$survey_week <- mdy(wrack_simple$survey_week) # This line of code just messes things up.
+
+# Attach transect block info to wrack data so we can select it in dropdowns
+wrack_beach <- full_join(wrack_simple, lookup_blocks, by = "transect_block") %>% 
+  dplyr::select(survey_week, transect_block, wrack, beach_section_initials, beach) %>% 
+  filter(beach == "NORTH" | beach == "SOUTH" | beach == "PURISIMA")
+
+# Not certain this is necessary, but it yields the mean wrack values for each beach sector per survey day
+wrack_mean_sector <- wrack_beach %>% 
+  group_by(survey_week, beach_section_initials) %>% 
+  summarize(mean = mean(wrack)) %>% 
+  filter(mean != "NA")
+
+# in this new code snippet I anm going to join wrack_shore_gull and wrack_mean_sector by date and beach_section_initials.
+
+# first, get dates the same in both data frames
+wrack_mean_sector$survey_week <- mdy(wrack_mean_sector$survey_week) # lubridate for wrack
+
+write_csv(wrack_mean_sector, "wrack_mean.csv")
+
+```
+
+###Tab 3 Graphs with wrack data
+```{r}
+
+wrack_shore_gull <- birds_by_sector %>% 
+  filter(species == "SNPL" | species == "SAND" | species_type == "Gull") %>% 
+  mutate(sp_2 = case_when(
+    species == "SNPL" ~ "SNPL",
+    species == "SAND" ~ "SAND",
+    species == "CAGU" ~ "Gull",
+    species == "WEGU" ~ "Gull",
+    species == "HEEG" ~ "Gull"
+  ))
+
+# below I am going to join wrack_shore_gull and wrack_mean_sector by date and beach_section_initials.
+
+wrack_shore_gull$survey_week <- mdy(wrack_shore_gull$survey_week) # lubridate for wrack_shore_gull so it can be combined with wrack_mean_sector
+
+wrack_avian_join <- full_join(wrack_shore_gull, wrack_mean_sector, by = c("survey_week", "beach_section_initials")) 
+
+wrack_avian_df <- wrack_avian_join %>% 
+  dplyr::select(survey_week, beach_section_initials, sp_2, total, mean) %>% 
+  rename(species_2 = sp_2, mean_wrack = mean) %>% 
+  filter(mean_wrack != "NA") # removed rows where wrack = NA, meaning no wrack data were collected
+
+write_csv(wrack_avian_df, "wrack_avian_df.csv") 
+
+```
+
+#DO NOT CHANGE ANY OF THE ABOVE CODE!!!!
+#ANYTHING NEW GOES BELOW THIS LINE. ON PENALTY OF SADNESS.
+
+# This is our attempt to make a map.
+```{r}
+# comine vafb_birds_combine with block to make sure SNPL has GPS coords without messing up our original dataframe.
+
+# simplify blocks a bit
+blocks_2 <- blocks %>% 
+  dplyr::select(transect_block, y_proj, x_proj)
+
+avian_block_map <- vafb_birds_combine %>% 
+  dplyr::select(survey_week, transect_block, y_proj, x_proj, species, count)
+
+#avian_block_map$y_proj <- as.numeric(avian_block_map$y_proj)
+#avian_block_map$y_proj <- ifelse(is.na(avian_block_map$y_proj), full_join(avian_block_map, blocks_2, by = "transect_block"), avian_block_map$y_proj)
+# this did not work. horribly so.
+
+write_csv(blocks_2, "blocks_2.csv")
+
+write_csv(avian_block_map, "avian_block_map.csv")
+
+# did the y_proj/x_proj combine step in excel with vlookup 
+# use avian_block_map_2.csv
+
+```
+
+```{r}
+
+# Simplfy lookup_blocks so only transect block, and UTM are shown. Need to convert UTM to lat/long
+block_gps <- lookup_blocks %>% 
+  dplyr::select(transect_block, x_proj, y_proj) %>% 
+  filter(x_proj != "NA")
+
+rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
+
+
+#Transform UTM to lat/long
+
+#block_utm <- SpatialPoints(block_gps, proj4string=CRS("+proj=utm +zone=10S +datum=WGS84"))
+
+#block_latlong <- spTransform(block_utm, CRS("+proj=longlat +datum=WGS84"))
+
+# Coerce back to dataframe so ggplot knows what to do with it.
+#block_gps2 <- as.data.frame(block_latlong) 
+
+
+```
+
+```{r}
+# Now can we join blocks_gps2 to avian_block_map_2?
+
+#avian_block_map_2 <- read_csv("avian_block_map_2.csv")
+
+#avian_block_gps <- full_join()
+
+
+```
+
+

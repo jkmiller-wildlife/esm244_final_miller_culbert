@@ -24,19 +24,19 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor) # to clean column names
 library(lubridate) # date wrangling. will probably need to separate out counts by month or weeknumber to make visualization easier/nicer. converts dates to dates rather than numerical sequences.
-library(tseries) # for time series data
-library(sf)
-library(tmap)
-library(rgdal) # For transforming UTM corrdinates to lat/long
-library(leaflet)
-library(ggrepel)
-library(ggspatial)
-library(RColorBrewer)
-library(gganimate)
-library(spatstat)
-library(maptools)
-library(sp)
-library(raster)
+#library(tseries) # for time series data
+#library(sf)
+#library(tmap)
+#library(rgdal) # For transforming UTM corrdinates to lat/long
+#library(leaflet)
+#library(ggrepel)
+#library(ggspatial)
+#library(RColorBrewer)
+#library(gganimate)
+#library(spatstat)
+#library(maptools)
+#library(sp)
+#library(raster)
 #library(gridExtra) # these apckages are for turnding graphs into grid plots I think. Didn't work.
 #library(grid) # didn't work
 
@@ -62,10 +62,10 @@ wrack_df <- read_csv("wrack_updated.csv")%>%
   clean_names()
 # wrack values, date, and transect block
 
-#lookup_avian <- read_csv("lookup_avian.csv")%>% 
- # clean_names() %>% 
-  #rename(species = actual_species) %>% 
-  #filter(analyze == 1) # filtered a subset of birds to analyze
+lookup_avian <- read_csv("lookup_avian.csv")%>% 
+  clean_names() %>% 
+  rename(species = actual_species) %>% 
+  filter(analyze == 1) # filtered a subset of birds to analyze
 # Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
 
 lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
@@ -236,7 +236,7 @@ wrack_mean_sector <- wrack_beach %>%
 
 # Read in couties shapefile for a map background
 ca_counties <- read_sf(".", layer = "california_county_shape_file") #%>% 
-#  st_transform(crs = 4326) # I guess it already is. R didn't like this snippet of code.
+  st_transform(crs = 4326) # I guess it already is. R didn't like this snippet of code.
 
 # Filter to Santa Barbara County. We will be soomed in enough that we don't need other background shapefiles.
 sb_county <- ca_counties %>% 
@@ -248,7 +248,7 @@ block_gps <- lookup_blocks %>%
   dplyr::select(x_proj, y_proj) %>% 
   filter(x_proj != "NA")
 
-#rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
+rownames(block_gps) <- lookup_blocks$transect_block # Didn't work. I think that's ok.
 
 #Transform UTM to lat/long
 block_utm <- SpatialPoints(block_gps, proj4string=CRS("+proj=utm +zone=10S +datum=WGS84"))
@@ -258,13 +258,13 @@ block_latlong <- spTransform(block_utm, CRS("+proj=longlat +datum=WGS84"))
 # Coerce back to dataframe so ggplot knows what to do with it.
 block_gps2 <- as.data.frame(block_latlong) 
 
-#plot(block_gps2) # Just checking that it works. It does.
+plot(block_gps2) # Just checking that it works. It does.
     
 
 # Set extent to y_proj 34.87 to 34.60, x_proj -120.65 to -120.59
 bounds <- as(extent(-120.65, -120.59, 34.60, 34.87), 'SpatialPolygons')
 crs(bounds) <- crs(sb_county)
-#sb_crop <- raster::crop(sb_county, bounds) # only worked once. but did work.
+sb_crop <- raster::crop(sb_county, bounds) # only worked once. but did work.
 
 sb_crop2 <- st_crop(sb_county, c(xmin = -120.65, xmax = -120.59, ymin = 34.63, ymax = 34.87)) # This one works and is more streamlined.
 
@@ -273,18 +273,18 @@ sb_crop2 <- st_crop(sb_county, c(xmin = -120.65, xmax = -120.59, ymin = 34.63, y
 ```{r, fig.height = 10, fig.width = 2}
 
 # Trying out map code
-ggplot(sb_crop2) +
-  geom_sf(aes(fill = STATE),
-          fill = "darkgreen",
-          color = "NA",
-          show.legend = FALSE) +
-  geom_point(data = block_gps2,
-             aes(x = x_proj, y = y_proj),
-             color = "black") +
-  theme(panel.background = element_rect(fill = 'blue', colour = 'NA')) + # can change these to better colors
-  coord_sf(datum = NA) +
-  labs(x = "", 
-       y = "")
+#ggplot(sb_crop2) +
+#  geom_sf(aes(fill = STATE),
+#          fill = "darkgreen",
+ #         color = "NA",
+  #        show.legend = FALSE) +
+  #geom_point(data = block_gps2,
+#             aes(x = x_proj, y = y_proj),
+ #            color = "black") +
+  #theme(panel.background = element_rect(fill = 'blue', colour = 'NA')) + # can change these to better colors
+#  coord_sf(datum = NA) +
+ # labs(x = "", 
+  #     y = "")
   
 # ok now we just need to get bird data to show up on here. 
 
@@ -325,6 +325,9 @@ wrack_shore_gull <- birds_by_sector %>%
     species == "HEEG" ~ "Gull"
   ))
 
+```
+
+```{r, include=FALSE}
 wrack_plot <- ggplot(wrack_mean_sector, aes(x = survey_week, y = mean)) +
   geom_col() 
 wrack_plot
