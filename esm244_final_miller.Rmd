@@ -62,10 +62,10 @@ wrack_df <- read_csv("wrack_updated.csv")%>%
   clean_names()
 # wrack values, date, and transect block
 
-lookup_avian <- read_csv("lookup_avian.csv")%>% 
-  clean_names() %>% 
-  rename(species = actual_species) %>% 
-  filter(analyze == 1) # filtered a subset of birds to analyze
+#lookup_avian <- read_csv("lookup_avian.csv")%>% 
+ # clean_names() %>% 
+  #rename(species = actual_species) %>% 
+  #filter(analyze == 1) # filtered a subset of birds to analyze
 # Has 4-letter avian code from AOU species list found here: https://www.pwrc.usgs.gov/bbl/manual/speclist.cfm or species_list.pdf in repo
 
 lookup_blocks <- read_csv("transect_block_coords.csv")%>% 
@@ -159,7 +159,7 @@ birds_by_sector <- vafb_birds_combine %>%
 
 
 birds_by_region <- vafb_birds_combine %>% 
-  group_by(survey_week, beach, species, species_type) %>% 
+  group_by(survey_week, beach, species_type) %>%  # remove species
   summarize(total = sum(count))
 
 write_csv(birds_by_region, "birds_by_region.csv")
@@ -170,7 +170,7 @@ write_csv(birds_by_region, "birds_by_region.csv")
 ```{r, fig.width=30, include = FALSE}
 
 birds_by_region %>% 
-  filter(species == "SNPL") %>% 
+#  filter(species == "SNPL") %>% 
   filter(beach == "PURISIMA") %>% 
   ggplot() +
   geom_point(aes(x = survey_week, y = total)) +
@@ -182,7 +182,7 @@ birds_by_region %>%
 
 
 ###Wrangle the wrack data to make it useful
-```{r}
+```{r, include = FALSE}
 wrack_simple <- wrack_df %>% 
   dplyr::select(survey_week, transect_block, wrack) %>%
   filter(wrack != -9) 
@@ -207,7 +207,7 @@ wrack_mean_sector <- wrack_beach %>%
 
 
 ###Tab 1 Graph
-```{r, fig.width=30}
+```{r, fig.width=30, include = FALSE}
 
 
 #  filter(species == "SNPL") %>% 
@@ -368,6 +368,7 @@ shore_gull_plot
 # first, get dates the same in both data frames
 wrack_mean_sector$survey_week <- mdy(wrack_mean_sector$survey_week)
 
+write_csv(wrack_mean_sector, "wrack_mean.csv")
 
 wrack_avian_join <- full_join(wrack_shore_gull, wrack_mean_sector, by = c("survey_week", "beach_section_initials")) 
 
