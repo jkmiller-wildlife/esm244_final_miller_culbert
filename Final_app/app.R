@@ -1,7 +1,7 @@
 library(tidyverse)
 library(shiny)
 library(shinythemes)
-library(lubridate)
+
 
 
 ############################################
@@ -11,14 +11,13 @@ birds_by_region <- read_csv("birds_by_region.csv")
 
 #birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
-wrack_avian_tab3 <- read_csv("wrack_avian_tab3.csv")
+wrack_avian_tab3 <- read_csv("wrack_avian_df.csv")
 
 #wrack_avian_tab3$survey_week <- mdy(wrack_avian_tab3$survey_week)
 
-wrack_mean <- read_csv("wrack_mean.csv") %>% 
-  filter(mean != "NA")
+wrack_mean <- read_csv("wrack_mean.csv") 
 
-#wrack_mean$survey_week <- mdy(wrack_mean$survey_week)
+#wrack_mean$survey_week <- mdy(wrack_mean$survey_week) # always gets warning emssage: All formats failed to parse. No formats found.
 
 #############################################
 
