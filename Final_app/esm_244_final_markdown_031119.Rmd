@@ -18,9 +18,9 @@ library(lubridate) # date wrangling. will probably need to separate out counts b
 #library(tseries) # for time series data
 
 #Mapping packages
-library(sf)
-library(leaflet)
-library(sp)
+#library(sf)
+#library(leaflet)
+#library(sp)
 
 ```
 
@@ -212,19 +212,19 @@ write_csv(wrack_avian_df, "wrack_avian_df.csv")
 # comine vafb_birds_combine with block to make sure SNPL has GPS coords without messing up our original dataframe.
 
 # simplify blocks a bit
-blocks_2 <- blocks %>% 
-  dplyr::select(transect_block, y_proj, x_proj)
+#blocks_2 <- blocks %>% 
+#  dplyr::select(transect_block, y_proj, x_proj)
 
-avian_block_map <- vafb_birds_combine %>% 
-  dplyr::select(survey_week, transect_block, y_proj, x_proj, species, count)
+#avian_block_map <- vafb_birds_combine %>% 
+#  dplyr::select(survey_week, transect_block, y_proj, x_proj, species, count)
 
 #avian_block_map$y_proj <- as.numeric(avian_block_map$y_proj)
 #avian_block_map$y_proj <- ifelse(is.na(avian_block_map$y_proj), full_join(avian_block_map, blocks_2, by = "transect_block"), avian_block_map$y_proj)
 # this did not work. horribly so.
 
-write_csv(blocks_2, "blocks_2.csv")
+#write_csv(blocks_2, "blocks_2.csv")
 
-write_csv(avian_block_map, "avian_block_map.csv")
+#write_csv(avian_block_map, "avian_block_map.csv")
 
 # did the y_proj/x_proj combine step in excel with vlookup 
 # use avian_block_map_2.csv
@@ -266,12 +266,12 @@ write_csv(avian_block_map, "avian_block_map.csv")
 #Regression test
 ```{r}
 
-wrack_avian_df$species_2 <- fct_relevel(wrack_avian_df$species_2, "SAND")
+#wrack_avian_df$species_2 <- fct_relevel(wrack_avian_df$species_2, "SAND")
 
-wrack_avian_lm <- lm(total ~ mean_wrack + species_2, data = wrack_avian_df)
-wrack_avian_lm
+#wrack_avian_lm <- lm(total ~ mean_wrack + species_2, data = wrack_avian_df)
+#wrack_avian_lm
 
-summary(wrack_avian_lm)
+#summary(wrack_avian_lm)
 
 ```
 

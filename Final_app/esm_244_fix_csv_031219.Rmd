@@ -1,0 +1,37 @@
+---
+title: "ESM 244 - fix csv"
+author: "Jamie Miller"
+date: "March 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(tidyverse)
+#library(lubridate)
+
+
+
+```
+
+```{r}
+#wrack_avian_fix <- read_csv("wrack_avian_df_good.csv")
+
+
+```
+
+```{r}
+
+#wrack_avian_fix$survey_week <- mdy(wrack_avian_fix$survey_week)
+
+```
+
+
+```{r}
+write_csv(wrack_avian_fix, "wrack_avian_fix.csv")
+```
+
