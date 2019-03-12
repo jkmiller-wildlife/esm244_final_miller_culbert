@@ -9,6 +9,8 @@ library(shinythemes)
 
 birds_by_region <- read_csv("birds_by_region.csv")
 
+birds_by_sector <- read_csv("birds_by_sector.csv")
+
 #birds_by_region$survey_week <- mdy(birds_by_region$survey_week)
 
 wrack_avian_tab3 <- read_csv("wrack_avian_df.csv")
@@ -23,7 +25,7 @@ wrack_mean <- read_csv("wrack_mean.csv")
 
 #### User Interface: Define UI for application 
 
-ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti. # JKM likes superhero and darkly.
+ui <- fluidPage(theme = shinytheme("superhero"), #Valid themes: cerulean, cosmo, cyborg, darkly, flatly, journal, lumen, paper, readable, sandstone, simplex, slate, spacelab, superhero, united, yeti. # JKM likes superhero and darkly.
 
                 # Title Panel
                 titlePanel("Taking Flight: A Look into the Birds of Vandenberg Air Force Base"), #main app title
@@ -68,25 +70,7 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                     h1("Species and Species Type by Beach - Time Series"),
                                     sidebarLayout(
                                       sidebarPanel(
-                                        dateRangeInput("survey_week_1", 
-                                                       label = "Choose Date Range:",
-                                                       start = "2011-03-01", 
-                                                       end = "2019-03-01",
-                                                       min = "2011-03-01", 
-                                                       max ="2019-03-01"),
-                                        
-                                        selectInput("species_type_1", 
-                                                    label = "Select Avian Family:",
-                                                    choices = list("Shorebird" = "Shorebird", 
-                                                                   "Gull" = "Gull", 
-                                                                   "Tern" = "Tern",
-                                                                   "Raptor" = "Raptor")),
-                                        
-                                        radioButtons("beach_1", 
-                                                     label = "Select Beach Region:", 
-                                                     choices = list("North Beaches" = "NORTH",
-                                                                    "Purisima Beaches" = "PURISIMA",
-                                                                    "South Beaches" = "SOUTH")),
+                                       
                          img(src='VAFB_small.jpg', align = "left")
                                         
                                       ),
@@ -94,7 +78,41 @@ ui <- fluidPage(theme=shinytheme("superhero"), #Valid themes: cerulean, cosmo, c
                                       
                                       # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
                                       mainPanel(
-                                        plotOutput("beach_species_plot")
+                                        plotOutput("beach_species_plot"),
+                                        
+                                        hr(),
+                                        
+                                        fluidRow(
+                                          
+                                          column(4,
+                                             
+                                                 dateRangeInput("survey_week_1", 
+                                                       label = "Choose Date Range:",
+                                                       start = "2011-03-01", 
+                                                       end = "2019-03-01",
+                                                       min = "2011-03-01", 
+                                                       max ="2019-03-01")
+                                                 ),
+                                          
+                                          column(4,
+                                                 
+                                                 selectInput("species_type_1", 
+                                                             label = "Select Avian Family:",
+                                                             choices = list("Shorebird" = "Shorebird", 
+                                                                            "Gull" = "Gull", 
+                                                                            "Tern" = "Tern",
+                                                                            "Raptor" = "Raptor"))
+                                                 ),
+                                          
+                                          column(4, 
+                                                 
+                                                 radioButtons("beach_1", 
+                                                              label = "Select Beach Region:", 
+                                                              choices = list("North Beaches" = "NORTH",
+                                                                             "Purisima Beaches" = "PURISIMA",
+                                                                             "South Beaches" = "SOUTH")) 
+                                                 )
+                                        )
                                       )
                                     )),
 
@@ -120,21 +138,26 @@ tabPanel("Habitat Change Over Time",
          # Sidebar with a slider input for number of bins 
          sidebarLayout(
            sidebarPanel(
- #            dateRangeInput("survey_week_3",        
-  #                          label = "Choose Date Range:",
-   #                         start = "2011-03-01", 
-    #                        end = "2019-03-01",
-     #                       min = "2011-03-01", 
-      #                      max ="2019-03-01"),
-       # I don't think we need date as a selector for this one. Already a lot going on with the differnt beach sections.
+                         img(src='VAFB_small.jpg', align = "left")
+             ),
+           
+           
+           # Output: use radio buttons for site location, radio buttons for bird species to create a line plot
+           mainPanel(
+             fluidRow(
 
-                          radioButtons("species_type_3", 
+               column(3, offset = 1,
+                      
+             radioButtons("species_type_3", 
                           label = "Select Species:",
                           choices = list("Snowy Plover" = "SNPL", 
                                          "Sanderling" = "SAND",
-                                         "Gulls" = "Gull")),
-
-                         selectInput("beach_3", 
+                                         "Gulls" = "Gull"))
+             ),
+             
+             column(3,
+             
+             selectInput("beach_3", 
                          label = "Select Beach Section:", 
                          choices = list("Minuteman (MIN)" = "MIN",
                                         "Shuman North (SHN)" = "SHN",
@@ -143,33 +166,35 @@ tabPanel("Habitat Change Over Time",
                                         "Purisima North (PNO)" = "PNO",
                                         "Wall Beach (WAL)" = "WAL",
                                         "Surf North (SNO)" = "SNO",
-                                        "Surf South (SSO)" = "SSO")),
-                         img(src='VAFB_small.jpg', align = "left")
-             ),
+                                        "Surf South (SSO)" = "SSO"))
+             )
+           ),
            
+             hr(),
            
-           # Output: use radio buttons for site location, radio buttons for bird species to create a line plot
-           mainPanel(
-             plotOutput("wrack_plot"),
-             plotOutput("wrack_avian_plot")
-           )
-         )),
+           plotOutput("wrack_plot"),
+           plotOutput("wrack_avian_plot")
+             
+         ))),
 
 
 # Regression Analysis
 
-tabPanel("Regression Analysis",
-         h1("Wrack Regression Analysis"),
+tabPanel("Species Diversity",
+         h1("Seasonal Species Diversity by Beach"),
          sidebarLayout(
            sidebarPanel(
 
-             radioButtons("species_type_4", 
-                          label = "Select Species:",
-                          choices = list("Snowy Plover" = "SNPL", 
-                                         "Sanderling" = "SAND",
-                                         "Gulls" = "Gull")),
+             dateRangeInput("survey_week_5", 
+                            label = "Choose Date Range:",
+                            start = "2011-03-01", 
+                            end = "2019-03-01",
+                            min = "2011-03-01", 
+                            max ="2019-03-01")
+           ),
+           
              
-             selectInput("beach_4", 
+             selectInput("beach_5", 
                          label = "Select Beach Section:", 
                          choices = list("Minuteman (MIN)" = "MIN",
                                         "Shuman North (SHN)" = "SHN",
@@ -184,11 +209,11 @@ tabPanel("Regression Analysis",
            
            # Output: use year input, radio buttons for site location, radio buttons for bird species to create a line plot
            mainPanel(
-             "Model Results", verbatimTextOutput("regression")
+             plotOutput("avian_diversity_plot")
            )
          ))
 
-))
+)
 
 
 
@@ -296,6 +321,7 @@ server <- function(input, output) {
       ggplot(wrack_mean_2(),
              aes(x = survey_week, y = mean)) +
         geom_point() +
+        geom_smooth() +
  #       geom_line(aes(color = mean_wrack)) +
 #        scale_fill_manual(limits = c("Snowy Plover", "Sanderling", "Gulls"), 
  #                         values = c("deepskyblue4","darkolivegreen4","darkgoldenrod2")) +
@@ -319,7 +345,7 @@ server <- function(input, output) {
         labs(x = " ", y = "Mean Wrack Score") +
         #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme_classic()
-    })
+    }, height = 300, width = 1000)
   
   
     output$wrack_avian_plot <- renderPlot({
@@ -350,34 +376,36 @@ server <- function(input, output) {
         labs(x = "Date", y = "Number Birds Observed") +
         #      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme_classic()
-    })
+    }, height = 400, width = 1000)
 
  #######################################   
-    # Regression output
+    # Species diversity
     
-    wrack_avian_model <- reactive(
+#    display_date = reactive({input$survey_week_4})
+#    renderPrint(display_date())
+    
+    avian_diversity <- reactive(
       {
-        wrack_avian_tab3 %>% 
-          filter(beach_section_initials == input$beach_4[1]
-                 | beach_section_initials == input$beach_4[2]
-                 | beach_section_initials == input$beach_4[3]
-                 | beach_section_initials == input$beach_4[4]
-                 | beach_section_initials == input$beach_4[5]
-                 | beach_section_initials == input$beach_4[6]
-                 | beach_section_initials == input$beach_4[7]
-                 | beach_section_initials == input$beach_4[8]) %>%
-          filter(species_2 == input$species_type_4[1] | 
-                   species_2 == input$species_type_4[2] | 
-                   species_2 == input$species_type_4[3])
+        birds_by_sector %>%
+          filter(survey_week >= input$survey_week_5[1], survey_week <= input$survey_week_5[2]) %>% 
+          filter(beach_section_initials == input$beach_5[1]
+                 | beach_section_initials == input$beach_5[2]
+                 | beach_section_initials == input$beach_5[3]
+                 | beach_section_initials == input$beach_5[4]
+                 | beach_section_initials == input$beach_5[5]
+                 | beach_section_initials == input$beach_5[6]
+                 | beach_section_initials == input$beach_5[7]
+                 | beach_section_initials == input$beach_5[8]) 
       }
     )
     
     
-    output$summary <- renderPrint({
-      fit <- lm(wrack_avian_model[,input$species_type_4] ~ wrack_avian_model[,input$beach_4])
-      names(fit$coefficients) <- c("Intercept", input$total)
-      summary(fit)
     
+    output$avian_diversity_plot <- renderPlot({
+      
+      ggplot(avian_diversity(), 
+             aes(x = survey_week, y = total, fill = species)) +
+        geom_bar(stat = "identity", position = "fill")
     })
       
   

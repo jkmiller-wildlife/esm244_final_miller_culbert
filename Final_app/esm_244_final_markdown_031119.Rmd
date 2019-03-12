@@ -132,6 +132,10 @@ birds_by_sector <- vafb_birds_combine %>%
   group_by(survey_week, beach_section_initials, beach, species, species_type) %>% 
   summarize(total = sum(count))
 
+birds_by_sector$survey_week <- mdy(birds_by_sector$survey_week) #Use lubridate() functions to convert to times/dates
+
+write_csv(birds_by_sector, "birds_by_sector.csv")
+
 
 birds_by_region <- vafb_birds_combine %>% 
   group_by(survey_week, beach, species_type) %>%  # remove species
